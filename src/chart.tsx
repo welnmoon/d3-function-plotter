@@ -37,7 +37,7 @@ const zoomDomain = (pan: number[], zoom: number): Domain => {
 const Chart = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const [pan, setPan] = useState<Domain>([-10, 30]);
+  const [pan, setPan] = useState<Domain>([0, 100]);
 
   const svgWidth = 900;
   const svgHeight = 500;
