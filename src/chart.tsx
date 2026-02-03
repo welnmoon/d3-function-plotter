@@ -12,22 +12,36 @@ const data: Datum[] = [
   { x: 50, y: 45 },
 ];
 
-const data2: Datum[] = data.map((p) => ({ x: p.x, y: 100 - p.y }));
+const N = 300;
+
+const zoomDomain = (pan: number[], zoom: number): number[] => {
+  const center = (pan[0] + pan[1]) / 2;
+  const span = pan[1] - pan[0];
+  const newSpan = span / zoom;
+  const newPan = [center - newSpan / 2, center + newSpan / 2];
+  return newPan;
+};
 
 const Chart = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const xDomain: [number, number] = [-10, 30];
-  const [pan, setPan] = useState<[number, number]>(xDomain);
+  const xDomain: number[] = [-10, 30];
+  const [pan, setPan] = useState<number[]>(xDomain);
 
   const svgWidth = 900;
   const svgHeight = 500;
 
+  //   useEffect(() => {
+  //     const timer = setTimeout(() => {
+  //       setPan((prev) => [prev[0] + 1, prev[1] + 1]);
+  //     }, 10);
+
+  //     return () => clearTimeout(timer);
+  //   }, [pan]);
+
   useEffect(() => {
     if (!svgRef.current) return;
     console.log("Use effect started", svgRef);
-
-    const N = 2000;
 
     const sinData = d3.range(N).map((i) => {
       const x = pan[0] + (i / (N - 1)) * (pan[1] - pan[0]);
@@ -52,8 +66,8 @@ const Chart = () => {
     // const xMax = d3.max(data, (d) => d.x) ?? 0;
     // const yMax = d3.max(data, (d) => d.y) ?? 0;
 
-    const [xMin, xMax] = d3.extent(data, (d) => d.x) as [number, number];
-    const [yMin, yMax] = d3.extent(data, (d) => d.y) as [number, number];
+    // const [xMin, xMax] = d3.extent(data, (d) => d.x) as [number, number];
+    // const [yMin, yMax] = d3.extent(data, (d) => d.y) as [number, number];
 
     const xScale = d3.scaleLinear().domain(pan).range([0, innerWidth]);
     const xAxisG = g.select<SVGGElement>("g.xAxisG").empty()
@@ -88,7 +102,7 @@ const Chart = () => {
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("d", line);
-  }, [xDomain, pan]);
+  }, [pan]);
 
   return (
     <>
@@ -98,6 +112,12 @@ const Chart = () => {
       </button>
       {pan[0]}--
       {pan[1]}
+      <button onClick={() => setPan((prev) => zoomDomain(prev, 1.2))}>
+        Zoom in
+      </button>
+      <button onClick={() => setPan((prev) => zoomDomain(prev, 1 / 1.2))}>
+        Zoom out
+      </button>
     </>
   );
 };
