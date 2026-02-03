@@ -3,6 +3,13 @@ import * as d3 from "d3";
 
 type Datum = { x: number; y: number };
 
+type Domain = [number, number];
+
+type PanDir = "left" | "right";
+type ZoomDir = "in" | "out";
+
+type Action = { type: "pan"; dir: PanDir } | { type: "zoom"; dir: ZoomDir };
+
 const data: Datum[] = [
   { x: 0, y: 5 },
   { x: 10, y: 2 },
@@ -12,36 +19,57 @@ const data: Datum[] = [
   { x: 50, y: 45 },
 ];
 
-const N = 300;
+const MIN_SPAN = 3;
+const MAX_SPAN = 100;
+const PAN_FRACTION = 0.1;
+const ZOOM_K = 1.2;
 
-const zoomDomain = (pan: number[], zoom: number): number[] => {
+const N = 1000;
+
+const zoomDomain = (pan: number[], zoom: number): Domain => {
   const center = (pan[0] + pan[1]) / 2;
   const span = pan[1] - pan[0];
   const newSpan = span / zoom;
-  const newPan = [center - newSpan / 2, center + newSpan / 2];
+  const newPan = [center - newSpan / 2, center + newSpan / 2] as Domain;
   return newPan;
 };
 
 const Chart = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const xDomain: number[] = [-10, 30];
-  const [pan, setPan] = useState<number[]>(xDomain);
+  const [pan, setPan] = useState<Domain>([-10, 30]);
 
   const svgWidth = 900;
   const svgHeight = 500;
 
-  //   useEffect(() => {
-  //     const timer = setTimeout(() => {
-  //       setPan((prev) => [prev[0] + 1, prev[1] + 1]);
-  //     }, 10);
+  const updatePan = (action: Action) => {
+    if (action.type === "pan") {
+      setPan((prev) =>
+        action.dir === "left"
+          ? [prev[0] - prev[0] * PAN_FRACTION, prev[1] - prev[0] * PAN_FRACTION]
+          : [
+              prev[0] + prev[0] * PAN_FRACTION,
+              prev[1] + prev[0] * PAN_FRACTION,
+            ],
+      );
+      return;
+    }
 
-  //     return () => clearTimeout(timer);
-  //   }, [pan]);
+    setPan((prev) => {
+      const span = prev[1] - prev[0];
+      const next =
+        action.dir === "in"
+          ? zoomDomain(prev, ZOOM_K)
+          : zoomDomain(prev, 1 / ZOOM_K);
+      const nextSpan = next[1] - next[0];
+
+      if (nextSpan < MIN_SPAN || nextSpan > MAX_SPAN) return prev;
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (!svgRef.current) return;
-    console.log("Use effect started", svgRef);
 
     const sinData = d3.range(N).map((i) => {
       const x = pan[0] + (i / (N - 1)) * (pan[1] - pan[0]);
@@ -55,7 +83,6 @@ const Chart = () => {
 
     const svg = d3.select(svgRef.current);
     const root = svg.select<SVGGElement>("g.root");
-    console.log("root g", root);
     const g = root.empty()
       ? svg
           .append("g")
@@ -107,17 +134,20 @@ const Chart = () => {
   return (
     <>
       <svg ref={svgRef} width={svgWidth} height={svgHeight} />
-      <button onClick={() => setPan((prev) => [prev[0] + 1, prev[1] + 1])}>
-        Pan -{">"}
+      <button onClick={() => updatePan({ type: "pan", dir: "right" })}>
+        right
       </button>
-      {pan[0]}--
-      {pan[1]}
-      <button onClick={() => setPan((prev) => zoomDomain(prev, 1.2))}>
+      <button onClick={() => updatePan({ type: "pan", dir: "left" })}>
+        left
+      </button>
+
+      <button onClick={() => updatePan({ type: "zoom", dir: "in" })}>
         Zoom in
       </button>
-      <button onClick={() => setPan((prev) => zoomDomain(prev, 1 / 1.2))}>
+      <button onClick={() => updatePan({ type: "zoom", dir: "out" })}>
         Zoom out
       </button>
+      <div>span: {(pan[1] - pan[0]).toFixed(3)}</div>
     </>
   );
 };
