@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
 type Datum = { x: number; y: number };
@@ -17,12 +17,22 @@ const data2: Datum[] = data.map((p) => ({ x: p.x, y: 100 - p.y }));
 const Chart = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
+  const xDomain: [number, number] = [-10, 30];
+  const [pan, setPan] = useState<[number, number]>(xDomain);
+
   const svgWidth = 900;
   const svgHeight = 500;
 
   useEffect(() => {
     if (!svgRef.current) return;
     console.log("Use effect started", svgRef);
+
+    const N = 2000;
+
+    const sinData = d3.range(N).map((i) => {
+      const x = pan[0] + (i / (N - 1)) * (pan[1] - pan[0]);
+      return { x, y: Math.sin(x) };
+    });
 
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
 
@@ -45,7 +55,7 @@ const Chart = () => {
     const [xMin, xMax] = d3.extent(data, (d) => d.x) as [number, number];
     const [yMin, yMax] = d3.extent(data, (d) => d.y) as [number, number];
 
-    const xScale = d3.scaleLinear().domain([xMin, xMax]).range([0, innerWidth]);
+    const xScale = d3.scaleLinear().domain(pan).range([0, innerWidth]);
     const xAxisG = g.select<SVGGElement>("g.xAxisG").empty()
       ? g
           .append("g")
@@ -55,10 +65,7 @@ const Chart = () => {
 
     xAxisG.call(d3.axisBottom(xScale));
 
-    const yScale = d3
-      .scaleLinear()
-      .domain([yMin, yMax])
-      .range([innerHeight, 0]);
+    const yScale = d3.scaleLinear().domain([-1, 1]).range([innerHeight, 0]);
     const yAxisG = g.select<SVGGElement>("g.yAxisG").empty()
       ? g.append("g").attr("class", "yAxisG")
       : g.select<SVGGElement>("g.yAxisG");
@@ -72,48 +79,25 @@ const Chart = () => {
     const plotG = g.select<SVGGElement>("g.plot").empty()
       ? g.append("g").attr("class", "plot")
       : g.select<SVGGElement>("g.plot");
-    plotG
-      .selectAll("circle")
-      .data(data)
-      .join("circle")
-      .attr("cx", (d) => xScale(d.x))
-      .attr("cy", (d) => yScale(d.y))
-      .attr("r", 4)
-      .attr("fill", "steelblue")
-      .attr("stroke", "blue");
 
     plotG
-      .selectAll("circle2")
-      .data(data2)
-      .join("circle")
-      .attr("cx", (d) => xScale(d.x))
-      .attr("cy", (d) => yScale(d.y))
-      .attr("r", 4)
-      .attr("fill", "steelblue")
-      .attr("stroke", "blue");
-
-    plotG
-      .selectAll("path.line")
-      .data([data])
+      .selectAll("path.sin")
+      .data([sinData])
       .join("path")
-      .attr("class", "line")
+      .attr("class", "sin")
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("d", line);
-
-    plotG
-      .selectAll("path.line2")
-      .data([data2])
-      .join("path")
-      .attr("class", "line2")
-      .attr("fill", "none")
-      .attr("stroke", "orange")
-      .attr("d", line);
-  }, []);
+  }, [xDomain, pan]);
 
   return (
     <>
       <svg ref={svgRef} width={svgWidth} height={svgHeight} />
+      <button onClick={() => setPan((prev) => [prev[0] + 1, prev[1] + 1])}>
+        Pan -{">"}
+      </button>
+      {pan[0]}--
+      {pan[1]}
     </>
   );
 };
