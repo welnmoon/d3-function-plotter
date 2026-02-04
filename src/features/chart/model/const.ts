@@ -1,8 +1,8 @@
-export const graphMaxHeight = 400;
-export const graphMaxWidth = 900;
-export const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-export const graphInnerHeight = graphMaxHeight - margin.top - margin.bottom;
-export const graphInnerWidth = graphMaxWidth - margin.left - margin.right;
+export const GRAPH_MAX_HEIGHT = 400;
+export const GRAPH_MAX_WIDTH = 900;
+export const MARGIN = { top: 20, right: 30, bottom: 30, left: 40 };
+export const INNER_HEIGHT = GRAPH_MAX_HEIGHT - MARGIN.top - MARGIN.bottom;
+export const INNER_WIDTH = GRAPH_MAX_WIDTH - MARGIN.left - MARGIN.right;
 export const N = 300;
 
 //ZOOM

@@ -2,10 +2,10 @@ import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import type { Action, Domain, Point } from "../model/types";
 import {
-  graphInnerHeight,
-  graphInnerWidth,
-  graphMaxHeight,
-  graphMaxWidth,
+  INNER_HEIGHT,
+  INNER_WIDTH,
+  GRAPH_MAX_HEIGHT,
+  GRAPH_MAX_WIDTH,
   PAN_FRACTION,
   ZOOM,
   ZOOM_IN,
@@ -15,8 +15,8 @@ import { sinData } from "../model/data";
 import { zoomDomain } from "../model/scales";
 
 const Chart = () => {
+  // --------------- refs ------------------
   const svgRef = useRef<SVGSVGElement | null>(null);
-
   const xAxisGroupRef = useRef<d3.Selection<
     SVGGElement,
     unknown,
@@ -35,39 +35,62 @@ const Chart = () => {
     null,
     undefined
   > | null>(null);
-  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  const zoomBehaviorRef = useRef<d3.ZoomBehavior<
+    SVGSVGElement,
+    unknown
+  > | null>(null);
   const xScaleRef = useRef<d3.ScaleLinear<number, number> | null>(null);
   const yScaleRef = useRef<d3.ScaleLinear<number, number> | null>(null);
 
   const xDomainRef = useRef<Domain>([0, 20]);
   const baseXDomainRef = useRef<Domain>([0, 20]);
 
+  // --------------- state ------------------
+
   const [xDomain, setXDomain] = useState<Domain>([0, 20]);
 
-  const updateXDomain = (action: Action) => {
-    if (action.type === "pan") {
-      setXDomain((prev) => {
-        const span = prev[1] - prev[0];
-        const step = span * PAN_FRACTION;
-        return action.dir === "left"
-          ? [prev[0] - step, prev[1] - step]
-          : [prev[0] + step, prev[1] + step];
-      });
-    } else {
-      setXDomain((prev) => {
-        const newXDomain =
-          action.dir === "in"
-            ? zoomDomain(prev, 1 / ZOOM)
-            : zoomDomain(prev, ZOOM);
-        const span = newXDomain[1] - newXDomain[0];
-        if (span > ZOOM_OUT || span < ZOOM_IN) return prev;
-        return newXDomain;
-      });
-    }
+  // const updateXDomain = (action: Action) => {
+  //   if (action.type === "pan") {
+  //     setXDomain((prev) => {
+  //       const span = prev[1] - prev[0];
+  //       const step = span * PAN_FRACTION;
+  //       return action.dir === "left"
+  //         ? [prev[0] - step, prev[1] - step]
+  //         : [prev[0] + step, prev[1] + step];
+  //     });
+  //   } else {
+  //     setXDomain((prev) => {
+  //       const newXDomain =
+  //         action.dir === "in"
+  //           ? zoomDomain(prev, 1 / ZOOM)
+  //           : zoomDomain(prev, ZOOM);
+  //       const span = newXDomain[1] - newXDomain[0];
+  //       if (span > ZOOM_OUT || span < ZOOM_IN) return prev;
+  //       return newXDomain;
+  //     });
+  //   }
+  // };
+
+  const zoomBy = (zoomFactor: number) => {
+    const svg = svgRef.current;
+    const zoom = zoomBehaviorRef.current;
+    if (!svg || !zoom) return;
+    d3.select(svg).call(zoom.scaleBy as any, zoomFactor);
+  };
+
+  const panBy = (dir: "left" | "right") => {
+    const svg = svgRef.current;
+    const zoom = zoomBehaviorRef.current;
+    if (!svg || !zoom) return;
+
+    const stepPx = INNER_WIDTH * 0.1;
+    const dx = dir === "left" ? stepPx : -stepPx;
+
+    d3.select(svg).call(zoom.translateBy as any, dx, 0);
   };
 
   //--------------------------------------//
-  // --------- init useEffect -------- //
+  // --------- init effect ------------- //
   //------------------------------------//
   useEffect(() => {
     const node = svgRef.current;
@@ -84,12 +107,10 @@ const Chart = () => {
     const plotGroup = mainGroup.append("g").attr("class", "plot");
     xDomainRef.current = xDomain;
     baseXDomainRef.current = xDomain;
+
     const zoom = d3.zoom<SVGSVGElement, unknown>().on("zoom", (event) => {
       const base = baseXDomainRef.current;
-      const baseScale = d3
-        .scaleLinear()
-        .domain(base)
-        .range([0, graphInnerWidth]);
+      const baseScale = d3.scaleLinear().domain(base).range([0, INNER_WIDTH]);
       const nextDomain = event.transform.rescaleX(baseScale).domain() as Domain;
 
       setXDomain((prev) => {
@@ -103,11 +124,11 @@ const Chart = () => {
     xAxisGroupRef.current = xAxisGroup;
     yAxisGroupRef.current = yAxisGroup;
     plotGroupRef.current = plotGroup;
-    zoomRef.current = zoom;
+    zoomBehaviorRef.current = zoom;
   }, []);
 
   //--------------------------------------//
-  // --------- update useEffect -------- //
+  // --------- update effect -------- //
   //------------------------------------//
   useEffect(() => {
     if (
@@ -116,12 +137,9 @@ const Chart = () => {
       !plotGroupRef.current
     )
       return;
-    const xScale = d3.scaleLinear().domain(xDomain).range([0, graphInnerWidth]);
+    const xScale = d3.scaleLinear().domain(xDomain).range([0, INNER_WIDTH]);
     xScaleRef.current = xScale;
-    const yScale = d3
-      .scaleLinear()
-      .domain([-1, 1])
-      .range([graphInnerHeight, 0]);
+    const yScale = d3.scaleLinear().domain([-1, 1]).range([INNER_HEIGHT, 0]);
     yScaleRef.current = yScale;
 
     const line = d3
@@ -131,7 +149,7 @@ const Chart = () => {
 
     xAxisGroupRef.current
       .call(d3.axisBottom(xScale))
-      .attr("transform", `translate(0,${graphInnerHeight})`);
+      .attr("transform", `translate(0,${INNER_HEIGHT})`);
     yAxisGroupRef.current.call(d3.axisLeft(yScale));
 
     plotGroupRef.current
@@ -143,22 +161,15 @@ const Chart = () => {
       .attr("d", line);
   }, [xDomain]);
 
+  // ----------- JSX -----------------
   return (
     <>
-      <svg ref={svgRef} width={graphMaxWidth} height={graphMaxHeight} />
-      <button onClick={() => updateXDomain({ type: "pan", dir: "right" })}>
-        right
-      </button>
-      <button onClick={() => updateXDomain({ type: "pan", dir: "left" })}>
-        left
-      </button>
+      <svg ref={svgRef} width={GRAPH_MAX_WIDTH} height={GRAPH_MAX_HEIGHT} />
+      <button onClick={() => panBy("right")}>right</button>
+      <button onClick={() => panBy("left")}>left</button>
 
-      <button onClick={() => updateXDomain({ type: "zoom", dir: "in" })}>
-        zoom in
-      </button>
-      <button onClick={() => updateXDomain({ type: "zoom", dir: "out" })}>
-        zoom out
-      </button>
+      <button onClick={() => zoomBy(1.2)}>zoom in</button>
+      <button onClick={() => zoomBy(1 / 1.2)}>zoom out</button>
     </>
   );
 };
