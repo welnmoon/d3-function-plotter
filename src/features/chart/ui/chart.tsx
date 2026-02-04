@@ -1,32 +1,20 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
+import type { Action, Domain, Point } from "../model/types";
+import {
+  graphInnerHeight,
+  graphInnerWidth,
+  graphMaxHeight,
+  graphMaxWidth,
+  PAN_FRACTION,
+  ZOOM,
+  ZOOM_IN,
+  ZOOM_OUT,
+} from "../model/const";
+import { sinData } from "../model/data";
+import { zoomDomain } from "../model/scales";
 
-type Domain = [number, number];
-type Point = { x: number; y: number };
-
-type PanDir = "left" | "right";
-type ZoomDir = "in" | "out";
-
-type Action = { type: "pan"; dir: PanDir } | { type: "zoom"; dir: ZoomDir };
-
-const graphMaxHeight = 400;
-const graphMaxWidth = 900;
-const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-const innerHeight = graphMaxHeight - margin.top - margin.bottom;
-const innerWidth = graphMaxWidth - margin.left - margin.right;
-const N = 300;
-
-const sinData = (xDomain: Domain): Point[] =>
-  d3.range(N).map((i) => {
-    const x = xDomain[0] + (i / (N - 1)) * (xDomain[1] - xDomain[0]);
-    return { x, y: Math.sin(x) };
-  });
-
-//--------------//
-//  Component  //
-//------------//
-
-const Chart2 = () => {
+const Chart = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const xAxisGroupRef = useRef<d3.Selection<
@@ -52,9 +40,23 @@ const Chart2 = () => {
 
   const updateXDomain = (action: Action) => {
     if (action.type === "pan") {
-      action.dir === "left"
-        ? setXDomain((prev) => [prev[0] + 1, prev[1] + 1])
-        : setXDomain((prev) => [prev[0] - 1, prev[1] - 1]);
+      setXDomain((prev) => {
+        const span = prev[1] - prev[0];
+        const step = span * PAN_FRACTION;
+        return action.dir === "left"
+          ? [prev[0] - step, prev[1] - step]
+          : [prev[0] + step, prev[1] + step];
+      });
+    } else {
+      setXDomain((prev) => {
+        const newXDomain =
+          action.dir === "in"
+            ? zoomDomain(prev, 1 / ZOOM)
+            : zoomDomain(prev, ZOOM);
+        const span = newXDomain[1] - newXDomain[0];
+        if (span > ZOOM_OUT || span < ZOOM_IN) return prev;
+        return newXDomain;
+      });
     }
   };
 
@@ -71,7 +73,7 @@ const Chart2 = () => {
       .attr("class", "main");
     const xAxisGroup = mainGroup.append("g").attr("class", "x-axis");
     const yAxisGroup = mainGroup.append("g").attr("class", "y-axis");
-    const plotGroup = mainGroup.append("g").attr("class", "plot"); // Как он поймет какой у него размер? - Я думаю что ему не нужно определять размер, так как это группа находится в main группе как и все.
+    const plotGroup = mainGroup.append("g").attr("class", "plot"); //
 
     xAxisGroupRef.current = xAxisGroup;
     yAxisGroupRef.current = yAxisGroup;
@@ -88,8 +90,11 @@ const Chart2 = () => {
       !plotGroupRef.current
     )
       return;
-    const xScale = d3.scaleLinear().domain(xDomain).range([0, innerWidth]);
-    const yScale = d3.scaleLinear().domain([-1, 1]).range([innerHeight, 0]);
+    const xScale = d3.scaleLinear().domain(xDomain).range([0, graphInnerWidth]);
+    const yScale = d3
+      .scaleLinear()
+      .domain([-1, 1])
+      .range([graphInnerHeight, 0]);
 
     const line = d3
       .line<Point>()
@@ -98,7 +103,7 @@ const Chart2 = () => {
 
     xAxisGroupRef.current
       .call(d3.axisBottom(xScale))
-      .attr("transform", `translate(0,${innerHeight})`);
+      .attr("transform", `translate(0,${graphInnerHeight})`);
     yAxisGroupRef.current.call(d3.axisLeft(yScale));
 
     plotGroupRef.current
@@ -119,8 +124,15 @@ const Chart2 = () => {
       <button onClick={() => updateXDomain({ type: "pan", dir: "left" })}>
         left
       </button>
+
+      <button onClick={() => updateXDomain({ type: "zoom", dir: "in" })}>
+        zoom in
+      </button>
+      <button onClick={() => updateXDomain({ type: "zoom", dir: "out" })}>
+        zoom out
+      </button>
     </>
   );
 };
 
-export default Chart2;
+export default Chart;
