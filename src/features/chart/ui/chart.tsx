@@ -49,28 +49,6 @@ const Chart = () => {
 
   const [xDomain, setXDomain] = useState<Domain>([0, 20]);
 
-  // const updateXDomain = (action: Action) => {
-  //   if (action.type === "pan") {
-  //     setXDomain((prev) => {
-  //       const span = prev[1] - prev[0];
-  //       const step = span * PAN_FRACTION;
-  //       return action.dir === "left"
-  //         ? [prev[0] - step, prev[1] - step]
-  //         : [prev[0] + step, prev[1] + step];
-  //     });
-  //   } else {
-  //     setXDomain((prev) => {
-  //       const newXDomain =
-  //         action.dir === "in"
-  //           ? zoomDomain(prev, 1 / ZOOM)
-  //           : zoomDomain(prev, ZOOM);
-  //       const span = newXDomain[1] - newXDomain[0];
-  //       if (span > ZOOM_OUT || span < ZOOM_IN) return prev;
-  //       return newXDomain;
-  //     });
-  //   }
-  // };
-
   const zoomBy = (zoomFactor: number) => {
     const svg = svgRef.current;
     const zoom = zoomBehaviorRef.current;
@@ -105,6 +83,15 @@ const Chart = () => {
     const xAxisGroup = mainGroup.append("g").attr("class", "x-axis");
     const yAxisGroup = mainGroup.append("g").attr("class", "y-axis");
     const plotGroup = mainGroup.append("g").attr("class", "plot");
+    plotGroup
+      .append("rect")
+      .attr("class", "overlay")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", INNER_WIDTH)
+      .attr("height", INNER_HEIGHT)
+      .attr("fill", "transparent")
+      .style("cursor", "grab");
     xDomainRef.current = xDomain;
     baseXDomainRef.current = xDomain;
 
