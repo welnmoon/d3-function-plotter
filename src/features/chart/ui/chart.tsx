@@ -35,6 +35,12 @@ const Chart = () => {
     null,
     undefined
   > | null>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
+  const xScaleRef = useRef<d3.ScaleLinear<number, number> | null>(null);
+  const yScaleRef = useRef<d3.ScaleLinear<number, number> | null>(null);
+
+  const xDomainRef = useRef<Domain>([0, 20]);
+  const baseXDomainRef = useRef<Domain>([0, 20]);
 
   const [xDomain, setXDomain] = useState<Domain>([0, 20]);
 
@@ -64,7 +70,9 @@ const Chart = () => {
   // --------- init useEffect -------- //
   //------------------------------------//
   useEffect(() => {
-    const svg = d3.select(svgRef.current);
+    const node = svgRef.current;
+    if (!node) return;
+    const svg = d3.select(node);
     if (svg.select("g.main").node()) return;
 
     const mainGroup = svg
@@ -73,11 +81,29 @@ const Chart = () => {
       .attr("class", "main");
     const xAxisGroup = mainGroup.append("g").attr("class", "x-axis");
     const yAxisGroup = mainGroup.append("g").attr("class", "y-axis");
-    const plotGroup = mainGroup.append("g").attr("class", "plot"); //
+    const plotGroup = mainGroup.append("g").attr("class", "plot");
+    xDomainRef.current = xDomain;
+    baseXDomainRef.current = xDomain;
+    const zoom = d3.zoom<SVGSVGElement, unknown>().on("zoom", (event) => {
+      const base = baseXDomainRef.current;
+      const baseScale = d3
+        .scaleLinear()
+        .domain(base)
+        .range([0, graphInnerWidth]);
+      const nextDomain = event.transform.rescaleX(baseScale).domain() as Domain;
 
+      setXDomain((prev) => {
+        const span = nextDomain[1] - nextDomain[0];
+        if (span > ZOOM_OUT || span < ZOOM_IN) return prev;
+        return nextDomain;
+      });
+    });
+
+    svg.call(zoom);
     xAxisGroupRef.current = xAxisGroup;
     yAxisGroupRef.current = yAxisGroup;
     plotGroupRef.current = plotGroup;
+    zoomRef.current = zoom;
   }, []);
 
   //--------------------------------------//
@@ -91,10 +117,12 @@ const Chart = () => {
     )
       return;
     const xScale = d3.scaleLinear().domain(xDomain).range([0, graphInnerWidth]);
+    xScaleRef.current = xScale;
     const yScale = d3
       .scaleLinear()
       .domain([-1, 1])
       .range([graphInnerHeight, 0]);
+    yScaleRef.current = yScale;
 
     const line = d3
       .line<Point>()
