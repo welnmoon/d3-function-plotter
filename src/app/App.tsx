@@ -1,5 +1,5 @@
-import "./App.css";
-import Chart from "./chart";
+import Chart from "../features/chart/ui/chart";
+import "./styles/App.css";
 
 function App() {
   return (
