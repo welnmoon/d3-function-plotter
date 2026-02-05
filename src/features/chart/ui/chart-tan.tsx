@@ -162,6 +162,10 @@ const ChartTan = () => {
 
     const line = d3
       .line<Point>()
+      .defined(
+        (d) => Number.isFinite(d.y) && d.y >= yDomain[0] && d.y <= yDomain[1],
+      )
+
       .x((d) => xScale(d.x))
       .y((d) => yScale(d.y));
 
@@ -177,7 +181,7 @@ const ChartTan = () => {
       .attr("class", "plot-line tan")
       .attr("fill", "none")
       .attr("d", line);
-  }, [yDomain]);
+  }, [yDomain, xDomain]);
 
   // ----------- JSX -----------------
   return (
