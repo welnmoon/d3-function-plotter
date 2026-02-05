@@ -1,0 +1,113 @@
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --text: #111111;
+  --card: #f3f4f6;
+  --border: #e5e7eb;
+  --chart-bg: #ffffff;
+  --chart-line: #ef4444;
+  --axis: #94a3b8;
+  --axis-text: #334155;
+  --control-bg: #111827;
+  --control-text: #f9fafb;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0f19;
+  --text: #e5e7eb;
+  --card: #111827;
+  --border: #1f2937;
+  --chart-bg: #0f172a;
+  --chart-line: #f97316;
+  --axis: #475569;
+  --axis-text: #cbd5e1;
+  --control-bg: #f8fafc;
+  --control-text: #0b0f19;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+button {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.chartPage {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: var(--bg);
+}
+.chartSvg {
+  display: block;
+  border-radius: 12px;
+  background: var(--chart-bg);
+}
+
+.chartSvg .x-axis path,
+.chartSvg .y-axis path,
+.chartSvg .x-axis line,
+.chartSvg .y-axis line {
+  stroke: var(--axis);
+}
+
+.chartSvg .x-axis text,
+.chartSvg .y-axis text {
+  fill: var(--axis-text);
+  font-size: 12px;
+}
+
+.chartSvg .plot-line {
+  stroke: var(--chart-line);
+  stroke-width: 2;
+}
+.chartButtons {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+
+  display: flex;
+  gap: 8px;
+}
+
+.chartButtons button {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 10px;
+  border: none;
+
+  background: var(--card);
+  color: var(--text);
+
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.chartButtons button:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.chartButtons button:active {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}

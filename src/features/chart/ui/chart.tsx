@@ -1,18 +1,17 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
-import type { Action, Domain, Point } from "../model/types";
+import type { Domain, Point } from "../model/types";
 import {
   INNER_HEIGHT,
   INNER_WIDTH,
   GRAPH_MAX_HEIGHT,
   GRAPH_MAX_WIDTH,
-  PAN_FRACTION,
-  ZOOM,
   ZOOM_IN,
   ZOOM_OUT,
 } from "../model/const";
 import { sinData } from "../model/data";
-import { zoomDomain } from "../model/scales";
+import styles from "./chart.module.css";
+import { MoveLeft, MoveRight, ZoomIn, ZoomOut } from "lucide-react";
 
 const Chart = () => {
   // --------------- refs ------------------
@@ -143,21 +142,37 @@ const Chart = () => {
       .selectAll("path")
       .data([sinData(xDomain)])
       .join("path")
+      .attr("class", "plot-line")
       .attr("fill", "none")
-      .attr("stroke", "tomato")
       .attr("d", line);
   }, [xDomain]);
 
   // ----------- JSX -----------------
   return (
-    <>
-      <svg ref={svgRef} width={GRAPH_MAX_WIDTH} height={GRAPH_MAX_HEIGHT} />
-      <button onClick={() => panBy("right")}>right</button>
-      <button onClick={() => panBy("left")}>left</button>
+    <main className="chartPage">
+      <svg
+        className="chartSvg"
+        ref={svgRef}
+        width={GRAPH_MAX_WIDTH}
+        height={GRAPH_MAX_HEIGHT}
+      />
 
-      <button onClick={() => zoomBy(1.2)}>zoom in</button>
-      <button onClick={() => zoomBy(1 / 1.2)}>zoom out</button>
-    </>
+      <div className="chartButtons">
+        <button onClick={() => panBy("left")}>
+          <MoveLeft size={15} />
+        </button>
+        <button onClick={() => panBy("right")}>
+          <MoveRight size={15} />
+        </button>
+
+        <button onClick={() => zoomBy(1.2)}>
+          <ZoomIn size={15} />
+        </button>
+        <button onClick={() => zoomBy(1 / 1.2)}>
+          <ZoomOut size={15} />
+        </button>
+      </div>
+    </main>
   );
 };
 
