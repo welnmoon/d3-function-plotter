@@ -12,3 +12,7 @@ export const ZOOM_OUT = 200;
 
 // pan
 export const PAN_FRACTION = 0.1;
+
+//
+export const xDOMAIN: [number, number] = [0, 30];
+export const yDOMAIN: [number, number] = [-3, 3];

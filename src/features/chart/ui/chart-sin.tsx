@@ -8,12 +8,13 @@ import {
   GRAPH_MAX_WIDTH,
   ZOOM_IN,
   ZOOM_OUT,
+  xDOMAIN,
+  yDOMAIN,
 } from "../model/const";
-import { sinData } from "../model/data";
-import styles from "./chart.module.css";
+import { sinData, tanData } from "../model/data";
 import { MoveLeft, MoveRight, ZoomIn, ZoomOut } from "lucide-react";
 
-const Chart = () => {
+const ChartSin = () => {
   // --------------- refs ------------------
   const svgRef = useRef<SVGSVGElement | null>(null);
   const xAxisGroupRef = useRef<d3.Selection<
@@ -41,17 +42,18 @@ const Chart = () => {
   const xScaleRef = useRef<d3.ScaleLinear<number, number> | null>(null);
   const yScaleRef = useRef<d3.ScaleLinear<number, number> | null>(null);
 
-  const xDomainRef = useRef<Domain>([0, 20]);
-  const baseXDomainRef = useRef<Domain>([0, 20]);
+  const xDomainRef = useRef<Domain>(xDOMAIN);
+  const baseXDomainRef = useRef<Domain>(xDOMAIN);
 
   // --------------- state ------------------
 
-  const [xDomain, setXDomain] = useState<Domain>([0, 20]);
+  const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
 
   const zoomBy = (zoomFactor: number) => {
     const svg = svgRef.current;
     const zoom = zoomBehaviorRef.current;
     if (!svg || !zoom) return;
+    console.log({ svg: !!svg, zoom: !!zoom });
     d3.select(svg).call(zoom.scaleBy as any, zoomFactor);
   };
 
@@ -62,7 +64,7 @@ const Chart = () => {
 
     const stepPx = INNER_WIDTH * 0.1;
     const dx = dir === "left" ? stepPx : -stepPx;
-
+    console.log({ svg: !!svg, zoom: !!zoom });
     d3.select(svg).call(zoom.translateBy as any, dx, 0);
   };
 
@@ -73,12 +75,12 @@ const Chart = () => {
     const node = svgRef.current;
     if (!node) return;
     const svg = d3.select(node);
-    if (svg.select("g.main").node()) return;
+    svg.selectAll("*").remove();
 
     const mainGroup = svg
       .append("g")
       .attr("transform", `translate(30, 20)`)
-      .attr("class", "main");
+      .attr("class", "main-sin");
     const xAxisGroup = mainGroup.append("g").attr("class", "x-axis");
     const yAxisGroup = mainGroup.append("g").attr("class", "y-axis");
     const plotGroup = mainGroup.append("g").attr("class", "plot");
@@ -91,20 +93,27 @@ const Chart = () => {
       .attr("height", INNER_HEIGHT)
       .attr("fill", "transparent")
       .style("cursor", "grab");
+
     xDomainRef.current = xDomain;
     baseXDomainRef.current = xDomain;
 
-    const zoom = d3.zoom<SVGSVGElement, unknown>().on("zoom", (event) => {
-      const base = baseXDomainRef.current;
-      const baseScale = d3.scaleLinear().domain(base).range([0, INNER_WIDTH]);
-      const nextDomain = event.transform.rescaleX(baseScale).domain() as Domain;
+    const zoom = d3
+      .zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.5, 10])
+      .on("zoom", (event) => {
+        const base = baseXDomainRef.current;
+        const baseScale = d3.scaleLinear().domain(base).range([0, INNER_WIDTH]);
+        const nextDomain = event.transform
+          .rescaleX(baseScale)
+          .domain() as Domain;
 
-      setXDomain((prev) => {
-        const span = nextDomain[1] - nextDomain[0];
-        if (span > ZOOM_OUT || span < ZOOM_IN) return prev;
-        return nextDomain;
+        // setXDomain((prev) => {
+        //   const span = nextDomain[1] - nextDomain[0];
+        //   if (span > ZOOM_OUT || span < ZOOM_IN) return prev;
+        //   return nextDomain;
+        // });
+        setXDomain(nextDomain);
       });
-    });
 
     svg.call(zoom);
     xAxisGroupRef.current = xAxisGroup;
@@ -114,7 +123,7 @@ const Chart = () => {
   }, []);
 
   //--------------------------------------//
-  // --------- update effect -------- //
+  // --------- update effect ----------- //
   //------------------------------------//
   useEffect(() => {
     if (
@@ -135,45 +144,48 @@ const Chart = () => {
 
     xAxisGroupRef.current
       .call(d3.axisBottom(xScale))
-      .attr("transform", `translate(0,${INNER_HEIGHT})`);
+      .attr("transform", `translate(0,${INNER_HEIGHT / 2})`);
     yAxisGroupRef.current.call(d3.axisLeft(yScale));
 
     plotGroupRef.current
       .selectAll("path")
       .data([sinData(xDomain)])
       .join("path")
-      .attr("class", "plot-line")
+      .attr("class", "plot-line sin")
       .attr("fill", "none")
       .attr("d", line);
   }, [xDomain]);
 
   // ----------- JSX -----------------
   return (
-    <main className="chartPage">
-      <svg
-        className="chartSvg"
-        ref={svgRef}
-        width={GRAPH_MAX_WIDTH}
-        height={GRAPH_MAX_HEIGHT}
-      />
+    <main>
+      <h1>Sin (X)</h1>
+      <section className="chartPage">
+        <svg
+          className="chartSvg"
+          ref={svgRef}
+          width={GRAPH_MAX_WIDTH}
+          height={GRAPH_MAX_HEIGHT}
+        />
 
-      <div className="chartButtons">
-        <button onClick={() => panBy("left")}>
-          <MoveLeft size={15} />
-        </button>
-        <button onClick={() => panBy("right")}>
-          <MoveRight size={15} />
-        </button>
+        <div className="chartButtons">
+          <button onClick={() => panBy("left")}>
+            <MoveLeft size={15} />
+          </button>
+          <button onClick={() => panBy("right")}>
+            <MoveRight size={15} />
+          </button>
 
-        <button onClick={() => zoomBy(1.2)}>
-          <ZoomIn size={15} />
-        </button>
-        <button onClick={() => zoomBy(1 / 1.2)}>
-          <ZoomOut size={15} />
-        </button>
-      </div>
+          <button onClick={() => zoomBy(1.2)}>
+            <ZoomIn size={15} />
+          </button>
+          <button onClick={() => zoomBy(1 / 1.2)}>
+            <ZoomOut size={15} />
+          </button>
+        </div>
+      </section>
     </main>
   );
 };
 
-export default Chart;
+export default ChartSin;

@@ -7,3 +7,9 @@ export const sinData = (xDomain: Domain): Point[] =>
     const x = xDomain[0] + (i / (N - 1)) * (xDomain[1] - xDomain[0]);
     return { x, y: Math.sin(x) };
   });
+
+export const tanData = (xDomain: Domain): Point[] =>
+  d3.range(N).map((i) => {
+    const x = xDomain[0] + (i / (N - 1)) * (xDomain[1] - xDomain[0]);
+    return { x, y: Math.tan(x) };
+  });

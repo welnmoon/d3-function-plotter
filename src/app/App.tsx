@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import Chart from "../features/chart/ui/chart";
+import ChartSin from "../features/chart/ui/chart-sin";
 import {
   applyTheme,
   getSavedTheme,
   type Theme,
 } from "../shared/config/theme/theme";
+import ChartTan from "../features/chart/ui/chart-tan";
 
 export function App() {
-  const [theme, setTheme] = useState<Theme>(
-    () => getSavedTheme() ?? "system",
-  );
+  const [theme, setTheme] = useState<Theme>(() => getSavedTheme() ?? "system");
 
   useEffect(() => {
     const cleanup = applyTheme(theme);
@@ -25,7 +24,9 @@ export function App() {
 
         <p>current: {theme}</p>
       </div>
-      <Chart />
+
+      <ChartSin />
+      <ChartTan />
     </div>
   );
 }
