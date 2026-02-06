@@ -10,7 +10,6 @@ const TanChart = () => {
 
   return (
     <main>
-      <h1>Tan (X)</h1>
       <section className="chartPage">
         <div style={{ position: "relative" }}>
           <svg

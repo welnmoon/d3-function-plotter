@@ -9,6 +9,7 @@ import {
 } from "../../../entities/chart/model/const";
 import { tanData } from "../../../entities/chart/model/data";
 import { parseDomain, serializeDomain } from "../../../shared/lib/domain-url";
+import { zoomDomain } from "../../../shared/lib/zoom-domain";
 
 export const useD3ZoomXY = () => {
   const tanSvgRef = useRef<SVGSVGElement | null>(null);
@@ -95,15 +96,6 @@ export const useD3ZoomXY = () => {
     const stepPx = INNER_WIDTH * 0.1;
     const dx = dir === "left" ? stepPx : -stepPx;
     d3.select(svg).call(zoom.translateBy as any, dx, 0);
-  };
-
-  const zoomDomain = (domain: Domain, zoomFactor: number) => {
-    const center = (domain[0] + domain[1]) / 2; // 10, 30 = 20
-    const span = domain[1] - domain[0];
-    const newSpan = span / zoomFactor; // 20 * 1.5 = 30
-    const newDomain: Domain = [center - newSpan / 2, center + newSpan / 2]; // 5, 35
-
-    return newDomain;
   };
 
   const zoomBoth = (zoomFactor: number) => {

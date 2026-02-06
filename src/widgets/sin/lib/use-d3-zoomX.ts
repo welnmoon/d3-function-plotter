@@ -8,6 +8,7 @@ import {
 import * as d3 from "d3";
 import { sinData } from "../../../entities/chart/model/data";
 import { parseDomain, serializeDomain } from "../../../shared/lib/domain-url";
+import { zoomDomain } from "../../../shared/lib/zoom-domain";
 
 export const useD3ZoomX = () => {
   // --------------- refs ------------------
@@ -40,19 +41,13 @@ export const useD3ZoomX = () => {
   const xDomainRef = useRef<Domain>(xDOMAIN);
   const baseXDomainRef = useRef<Domain>(xDOMAIN);
 
+  const lastTransformRef = useRef(d3.zoomIdentity);
+
   // --------------- state ------------------
 
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
 
   // ------------- zoom / pan -----------------
-
-  const zoomBy = (zoomFactor: number) => {
-    const svg = sinSvgRef.current;
-    const zoom = zoomBehaviorRef.current;
-    if (!svg || !zoom) return;
-    console.log({ svg: !!svg, zoom: !!zoom });
-    d3.select(svg).call(zoom.scaleBy as any, zoomFactor);
-  };
 
   const panBy = (dir: "left" | "right") => {
     const svg = sinSvgRef.current;
@@ -61,8 +56,11 @@ export const useD3ZoomX = () => {
 
     const stepPx = INNER_WIDTH * 0.1;
     const dx = dir === "left" ? stepPx : -stepPx;
-    console.log({ svg: !!svg, zoom: !!zoom });
     d3.select(svg).call(zoom.translateBy as any, dx, 0);
+  };
+
+  const zoomX = (factor: number) => {
+    setXDomain((d) => zoomDomain(d, factor));
   };
 
   const reset = () => {
@@ -105,15 +103,33 @@ export const useD3ZoomX = () => {
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.5, 10])
+      .filter((event) => event?.type !== "wheel")
       .on("zoom", (event) => {
-        const base = baseXDomainRef.current;
-        const baseScale = d3.scaleLinear().domain(base).range([0, INNER_WIDTH]);
-        const nextDomain = event.transform
-          .rescaleX(baseScale)
-          .domain() as Domain;
+        // const base = baseXDomainRef.current;
+        // const baseScale = d3.scaleLinear().domain(base).range([0, INNER_WIDTH]);
+        // const nextDomain = event.transform
+        //   .rescaleX(baseScale)
+        //   .domain() as Domain;
 
-        setXDomain(nextDomain);
+        // setXDomain(nextDomain);
+        const prev = lastTransformRef.current;
+        const current = event.transform;
+
+        const xDiffPx = current.x - prev.x;
+
+        lastTransformRef.current = current;
+
+        const xScale = d3
+          .scaleLinear()
+          .domain(xDomainRef.current)
+          .range([0, INNER_WIDTH]);
+
+        console.log("x diff px: ", xDiffPx);
+
+        const dX = xScale.invert(0) - xScale.invert(xDiffPx);
+        console.log("delta x: ", dX);
+
+        setXDomain(([a, b]) => [a + dX, b + dX]);
       });
 
     svg.call(zoom);
@@ -163,5 +179,5 @@ export const useD3ZoomX = () => {
       .attr("d", line);
   }, [xDomain]);
 
-  return { panBy, zoomBy, sinSvgRef, reset };
+  return { panBy, zoomX, sinSvgRef, reset };
 };

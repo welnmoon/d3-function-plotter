@@ -1,21 +1,63 @@
+import { Minus, MoveLeft, MoveRight, Plus, Undo2 } from "lucide-react";
 import {
   GRAPH_MAX_HEIGHT,
   GRAPH_MAX_WIDTH,
 } from "../../../entities/chart/model/const";
 import { useD3ZoomX } from "../lib/use-d3-zoomX";
-import { Minus, MoveLeft, MoveRight, Plus, Undo2 } from "lucide-react";
 
 const SinChart = () => {
-  const { panBy, zoomBy, sinSvgRef } = useD3ZoomX();
+  const { panBy, reset, zoomX, sinSvgRef } = useD3ZoomX();
+
   return (
     <main>
       <section className="chartPage">
-        <svg
-          className="chartSvg"
-          ref={sinSvgRef}
-          width={GRAPH_MAX_WIDTH}
-          height={GRAPH_MAX_HEIGHT}
-        />
+        <div style={{ position: "relative" }}>
+          <svg
+            onWheel={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+              zoomX(factor);
+            }}
+            className="chartSvg"
+            ref={sinSvgRef}
+            width={GRAPH_MAX_WIDTH}
+            height={GRAPH_MAX_HEIGHT}
+          />
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              top: "45%",
+              width: "100%",
+              height: 50,
+              background: "transparent",
+            }}
+            onWheel={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+              zoomX(factor);
+            }}
+          />
+          {/* 
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: 50,
+              height: "100%",
+              background: "transparent",
+            }}
+            onWheel={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+              zoomY(factor);
+            }}
+          />*/}
+        </div>
 
         <div className="chartButtons">
           <button onClick={() => panBy("left")}>
@@ -25,13 +67,13 @@ const SinChart = () => {
             <MoveRight size={15} />
           </button>
 
-          <button onClick={() => zoomBy(1.2)}>
+          <button onClick={() => zoomX(1.2)}>
             <Plus size={15} />
           </button>
-          <button onClick={() => zoomBy(1 / 1.2)}>
+          <button onClick={() => zoomX(1 / 1.2)}>
             <Minus size={15} />
           </button>
-          <button onClick={() => zoomBy(1 / 1.2)}>
+          <button onClick={() => reset()}>
             <Undo2 size={15} />
           </button>
         </div>
