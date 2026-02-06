@@ -273,7 +273,12 @@ export const useD3ZoomXY = () => {
 
     const line = d3
       .line<Point>()
-      .defined((d) => Number.isFinite(d.y) && Math.abs(d.y) < yDomain[1])
+      .defined((d) => {
+        if (!Number.isFinite(d.y)) return false;
+        const yMin = Math.min(yDomain[0], yDomain[1]);
+        const yMax = Math.max(yDomain[0], yDomain[1]);
+        return d.y >= yMin && d.y <= yMax;
+      })
       .x((d) => xScale(d.x))
       .y((d) => yScale(d.y));
 
