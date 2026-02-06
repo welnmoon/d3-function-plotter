@@ -1,22 +1,17 @@
-import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
-import type { Domain, Point } from "../model/types";
+import type { Domain, Point } from "../../../entities/chart/model/types";
 import {
   INNER_HEIGHT,
   INNER_WIDTH,
-  GRAPH_MAX_HEIGHT,
-  GRAPH_MAX_WIDTH,
-  ZOOM_IN,
-  ZOOM_OUT,
   xDOMAIN,
-  yDOMAIN,
-} from "../model/const";
-import { sinData, tanData } from "../model/data";
-import { MoveLeft, MoveRight, ZoomIn, ZoomOut } from "lucide-react";
+} from "../../../entities/chart/model/const";
+import * as d3 from "d3";
+import { sinData } from "../../../entities/chart/model/data";
+import { parseDomain, serializeDomain } from "../../../shared/lib/domain-url";
 
-const ChartSin = () => {
+export const useD3ZoomX = () => {
   // --------------- refs ------------------
-  const svgRef = useRef<SVGSVGElement | null>(null);
+  const sinSvgRef = useRef<SVGSVGElement | null>(null);
   const xAxisGroupRef = useRef<d3.Selection<
     SVGGElement,
     unknown,
@@ -49,8 +44,10 @@ const ChartSin = () => {
 
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
 
+  // ------------- zoom / pan -----------------
+
   const zoomBy = (zoomFactor: number) => {
-    const svg = svgRef.current;
+    const svg = sinSvgRef.current;
     const zoom = zoomBehaviorRef.current;
     if (!svg || !zoom) return;
     console.log({ svg: !!svg, zoom: !!zoom });
@@ -58,7 +55,7 @@ const ChartSin = () => {
   };
 
   const panBy = (dir: "left" | "right") => {
-    const svg = svgRef.current;
+    const svg = sinSvgRef.current;
     const zoom = zoomBehaviorRef.current;
     if (!svg || !zoom) return;
 
@@ -68,11 +65,20 @@ const ChartSin = () => {
     d3.select(svg).call(zoom.translateBy as any, dx, 0);
   };
 
+  const reset = () => {
+    setXDomain(xDOMAIN);
+  };
+
   //--------------------------------------//
   // --------- init effect ------------- //
   //------------------------------------//
   useEffect(() => {
-    const node = svgRef.current;
+    const params = new URLSearchParams(window.location.search);
+
+    const xFromUrl = parseDomain(params.get("x"));
+
+    if (xFromUrl) setXDomain(xFromUrl);
+    const node = sinSvgRef.current;
     if (!node) return;
     const svg = d3.select(node);
     svg.selectAll("*").remove();
@@ -107,11 +113,6 @@ const ChartSin = () => {
           .rescaleX(baseScale)
           .domain() as Domain;
 
-        // setXDomain((prev) => {
-        //   const span = nextDomain[1] - nextDomain[0];
-        //   if (span > ZOOM_OUT || span < ZOOM_IN) return prev;
-        //   return nextDomain;
-        // });
         setXDomain(nextDomain);
       });
 
@@ -126,6 +127,12 @@ const ChartSin = () => {
   // --------- update effect ----------- //
   //------------------------------------//
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    params.set("x", serializeDomain(xDomain));
+
+    const nextUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, "", nextUrl);
     if (
       !xAxisGroupRef.current ||
       !yAxisGroupRef.current ||
@@ -156,36 +163,5 @@ const ChartSin = () => {
       .attr("d", line);
   }, [xDomain]);
 
-  // ----------- JSX -----------------
-  return (
-    <main>
-      <h1>Sin (X)</h1>
-      <section className="chartPage">
-        <svg
-          className="chartSvg"
-          ref={svgRef}
-          width={GRAPH_MAX_WIDTH}
-          height={GRAPH_MAX_HEIGHT}
-        />
-
-        <div className="chartButtons">
-          <button onClick={() => panBy("left")}>
-            <MoveLeft size={15} />
-          </button>
-          <button onClick={() => panBy("right")}>
-            <MoveRight size={15} />
-          </button>
-
-          <button onClick={() => zoomBy(1.2)}>
-            <ZoomIn size={15} />
-          </button>
-          <button onClick={() => zoomBy(1 / 1.2)}>
-            <ZoomOut size={15} />
-          </button>
-        </div>
-      </section>
-    </main>
-  );
+  return { panBy, zoomBy, sinSvgRef, reset };
 };
-
-export default ChartSin;

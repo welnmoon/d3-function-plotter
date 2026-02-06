@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import ChartSin from "../features/chart/ui/chart-sin";
-import {
-  applyTheme,
-  getSavedTheme,
-  type Theme,
-} from "../shared/config/theme/theme";
-import ChartTan from "../features/chart/ui/chart-tan";
+
+import SinPage from "../pages/sin/ui/sin";
+import TanPage from "../pages/tan/ui/tan";
+import { applyTheme, getSavedTheme, type Theme } from "../shared/ui/theme";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 
 export function App() {
   const [theme, setTheme] = useState<Theme>(() => getSavedTheme() ?? "system");
@@ -16,17 +14,27 @@ export function App() {
   }, [theme]);
 
   return (
-    <div>
-      <div style={{ position: "absolute" }}>
-        <button onClick={() => setTheme("light")}>Light</button>
-        <button onClick={() => setTheme("dark")}>Dark</button>
-        <button onClick={() => setTheme("system")}>System</button>
-
-        <p>current: {theme}</p>
+    <div className="container">
+      <div className="nav">
+        <div>
+          <Link className="link" to="/sin">
+            Sin
+          </Link>{" "}
+          | <Link to="/tan">Tan</Link>
+        </div>
+        <div className="themeButtons">
+          <button onClick={() => setTheme("light")}>Light</button>
+          <button onClick={() => setTheme("dark")}>Dark</button>
+          <button onClick={() => setTheme("system")}>System</button>
+        </div>
       </div>
 
-      <ChartSin />
-      <ChartTan />
+      <Routes>
+        <Route path="/" element={<Navigate to="/sin" replace />} />
+        <Route path="/sin" element={<SinPage />} />
+        <Route path="/tan" element={<TanPage />} />
+        <Route path="*" element={<Navigate to="/sin" replace />} />
+      </Routes>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  --bg: #ffffff;
+  --bg: #e2d3be;
   --text: #111111;
   --card: #f3f4f6;
   --border: #e5e7eb;
@@ -33,6 +33,12 @@ body {
   color: var(--text);
 }
 
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -52,7 +58,6 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 300px;
 
   background: var(--bg);
 }
@@ -110,4 +115,20 @@ button {
 
 .chartButtons button:active {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  gap: 20px;
+}
+a {
+  text-decoration: none;
+}
+
+.themeButtons {
+  display: flex;
+  gap: 10px;
 }
