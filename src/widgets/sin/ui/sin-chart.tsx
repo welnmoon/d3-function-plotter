@@ -20,6 +20,7 @@ const SinChart = () => {
               zoomX(factor);
             }}
             className="chartSvg"
+            title="Scroll to zoom X axis"
             ref={sinSvgRef}
             width={GRAPH_MAX_WIDTH}
             height={GRAPH_MAX_HEIGHT}
@@ -27,20 +28,20 @@ const SinChart = () => {
         </div>
 
         <div className="chartButtons">
-          <button onClick={() => panBy("left")}>
+          <button onClick={() => panBy("left")} title="Pan left">
             <MoveLeft size={15} />
           </button>
-          <button onClick={() => panBy("right")}>
+          <button onClick={() => panBy("right")} title="Pan right">
             <MoveRight size={15} />
           </button>
 
-          <button onClick={() => zoomX(1.2)}>
+          <button onClick={() => zoomX(1.2)} title="Zoom in">
             <Plus size={15} />
           </button>
-          <button onClick={() => zoomX(1 / 1.2)}>
+          <button onClick={() => zoomX(1 / 1.2)} title="Zoom out">
             <Minus size={15} />
           </button>
-          <button onClick={() => reset()}>
+          <button onClick={() => reset()} title="Reset view">
             <Undo2 size={15} />
           </button>
         </div>

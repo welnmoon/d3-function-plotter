@@ -99,6 +99,7 @@ button:active {
   align-items: center;
   background: var(--bg);
   padding: 40px 20px;
+  gap: 20px;
 }
 
 .chartSvg {
@@ -106,6 +107,8 @@ button:active {
   border-radius: 16px;
   background: var(--chart-bg);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  max-width: 100%;
+  height: auto;
 }
 
 .chartSvg .x-axis path,
@@ -134,6 +137,7 @@ button:active {
   flex-direction: column;
   gap: 12px;
   margin-left: 20px;
+  flex: 0 0 auto;
 }
 
 .chartButtons button {
@@ -148,6 +152,7 @@ button:active {
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
+  padding: 0;
 }
 
 .chartButtons button:hover {
@@ -169,6 +174,7 @@ button:active {
   margin-top: 20px;
   gap: 24px;
   padding: 16px;
+  flex-wrap: wrap;
 }
 
 .nav a {
@@ -196,10 +202,98 @@ a {
   background: var(--card);
   border-radius: 12px;
   border: 1px solid var(--border);
+  flex-wrap: wrap;
 }
 
 .themeButtons button {
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding: 16px;
+  }
+
+  .chartPage {
+    padding: 24px 14px;
+    gap: 14px;
+  }
+
+  .chartButtons {
+    margin-left: 12px;
+    gap: 10px;
+  }
+
+  .chartButtons button {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .nav {
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .nav a {
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .chartPage {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chartButtons {
+    flex-direction: row;
+    margin-left: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .chartButtons button {
+    width: 46px;
+    height: 46px;
+  }
+
+  .chartSvg {
+    width: 100%;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  button {
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .container {
+    padding: 12px;
+  }
+
+  .chartPage {
+    padding: 18px 10px;
+  }
+
+  .chartButtons {
+    gap: 8px;
+  }
+
+  .chartButtons button {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+    border-radius: 11px;
+  }
+
+  .nav a {
+    padding: 8px 12px;
+  }
 }

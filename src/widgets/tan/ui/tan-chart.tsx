@@ -32,7 +32,9 @@ const TanChart = () => {
               width: "100%",
               height: 20,
               background: "transparent",
+              cursor: "ns-resize",
             }}
+            title="Scroll to zoom X axis"
             onWheel={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -48,8 +50,10 @@ const TanChart = () => {
               top: 0,
               width: 50,
               height: "100%",
+              cursor: "ew-resize",
               background: "transparent",
             }}
+            title="Scroll to zoom Y axis"
             onWheel={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -60,20 +64,23 @@ const TanChart = () => {
         </div>
 
         <div className="chartButtons">
-          <button onClick={() => panBy("left")}>
+          <button onClick={() => panBy("left")} title="Pan left">
             <MoveLeft size={15} />
           </button>
-          <button onClick={() => panBy("right")}>
+          <button onClick={() => panBy("right")} title="Pan right">
             <MoveRight size={15} />
           </button>
 
-          <button onClick={() => zoomBoth(1.2)}>
+          <button onClick={() => zoomBoth(1.2)} title="Zoom in (both axes)">
             <Plus size={15} />
           </button>
-          <button onClick={() => zoomBoth(1 / 1.2)}>
+          <button
+            onClick={() => zoomBoth(1 / 1.2)}
+            title="Zoom out (both axes)"
+          >
             <Minus size={15} />
           </button>
-          <button onClick={() => reset()}>
+          <button onClick={() => reset()} title="Reset view">
             <Undo2 size={15} />
           </button>
         </div>
