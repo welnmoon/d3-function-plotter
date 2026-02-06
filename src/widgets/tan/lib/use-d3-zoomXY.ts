@@ -123,6 +123,8 @@ export const useD3ZoomXY = () => {
     setXDomain(xDOMAIN);
     setYDomain(yDOMAIN);
 
+    lastTransformRef.current = d3.zoomIdentity;
+
     const svg = tanSvgRef.current;
     const zoom = zoomBehaviorRef.current;
     if (!svg || !zoom) return;
