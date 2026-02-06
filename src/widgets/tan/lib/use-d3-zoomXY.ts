@@ -4,6 +4,8 @@ import type { Domain, Point } from "../../../entities/chart/model/types";
 import {
   INNER_HEIGHT,
   INNER_WIDTH,
+  MAX_SPAN,
+  MIN_SPAN,
   xDOMAIN,
   yDOMAIN,
 } from "../../../entities/chart/model/const";
@@ -99,16 +101,24 @@ export const useD3ZoomXY = () => {
   };
 
   const zoomBoth = (zoomFactor: number) => {
-    setXDomain((d) => zoomDomain(d, zoomFactor));
-    setYDomain((d) => zoomDomain(d, zoomFactor));
+    setXDomain((d) =>
+      zoomDomain(d, zoomFactor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
+    );
+    setYDomain((d) =>
+      zoomDomain(d, zoomFactor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
+    );
   };
 
   const zoomX = (factor: number) => {
-    setXDomain((d) => zoomDomain(d, factor));
+    setXDomain((d) =>
+      zoomDomain(d, factor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
+    );
   };
 
   const zoomY = (factor: number) => {
-    setYDomain((d) => zoomDomain(d, factor));
+    setYDomain((d) =>
+      zoomDomain(d, factor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
+    );
   };
 
   const reset = () => {

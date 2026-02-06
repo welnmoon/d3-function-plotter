@@ -35,17 +35,18 @@ export const useD3ZoomX = () => {
     SVGSVGElement,
     unknown
   > | null>(null);
-  const xScaleRef = useRef<d3.ScaleLinear<number, number> | null>(null);
-  const yScaleRef = useRef<d3.ScaleLinear<number, number> | null>(null);
 
   const xDomainRef = useRef<Domain>(xDOMAIN);
-  const baseXDomainRef = useRef<Domain>(xDOMAIN);
 
   const lastTransformRef = useRef(d3.zoomIdentity);
 
   // --------------- state ------------------
 
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
+
+  useEffect(() => {
+    xDomainRef.current = xDomain;
+  }, [xDomain]);
 
   // ------------- zoom / pan -----------------
 
@@ -60,11 +61,18 @@ export const useD3ZoomX = () => {
   };
 
   const zoomX = (factor: number) => {
-    setXDomain((d) => zoomDomain(d, factor));
+    setXDomain((d) => zoomDomain(d, factor, { minSpan: 0.5, maxSpan: 200 }));
   };
 
   const reset = () => {
     setXDomain(xDOMAIN);
+    lastTransformRef.current = d3.zoomIdentity;
+
+    const svg = sinSvgRef.current;
+    const zoom = zoomBehaviorRef.current;
+    if (!svg || !zoom) return;
+
+    d3.select(svg).call(zoom.transform as any, d3.zoomIdentity);
   };
 
   //--------------------------------------//
@@ -99,7 +107,6 @@ export const useD3ZoomX = () => {
       .style("cursor", "grab");
 
     xDomainRef.current = xDomain;
-    baseXDomainRef.current = xDomain;
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
@@ -156,9 +163,7 @@ export const useD3ZoomX = () => {
     )
       return;
     const xScale = d3.scaleLinear().domain(xDomain).range([0, INNER_WIDTH]);
-    xScaleRef.current = xScale;
     const yScale = d3.scaleLinear().domain([-1, 1]).range([INNER_HEIGHT, 0]);
-    yScaleRef.current = yScale;
 
     const line = d3
       .line<Point>()

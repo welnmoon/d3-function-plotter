@@ -24,39 +24,6 @@ const SinChart = () => {
             width={GRAPH_MAX_WIDTH}
             height={GRAPH_MAX_HEIGHT}
           />
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              top: "45%",
-              width: "100%",
-              height: 50,
-              background: "transparent",
-            }}
-            onWheel={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
-              zoomX(factor);
-            }}
-          />
-          {/* 
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              width: 50,
-              height: "100%",
-              background: "transparent",
-            }}
-            onWheel={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
-              zoomY(factor);
-            }}
-          />*/}
         </div>
 
         <div className="chartButtons">

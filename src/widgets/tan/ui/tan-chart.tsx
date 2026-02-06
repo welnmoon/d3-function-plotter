@@ -30,7 +30,7 @@ const TanChart = () => {
               left: 0,
               top: "45%",
               width: "100%",
-              height: 50,
+              height: 20,
               background: "transparent",
             }}
             onWheel={(e) => {

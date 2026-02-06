@@ -9,6 +9,8 @@ export const N = 1000;
 export const ZOOM = 1.2;
 export const ZOOM_IN = 5;
 export const ZOOM_OUT = 200;
+export const MIN_SPAN = 5;
+export const MAX_SPAN = 200;
 
 // pan
 export const PAN_FRACTION = 0.1;
