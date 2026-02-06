@@ -3,6 +3,8 @@ import type { Domain, Point } from "../../../entities/chart/model/types";
 import {
   INNER_HEIGHT,
   INNER_WIDTH,
+  MAX_SPAN,
+  MIN_SPAN,
   xDOMAIN,
 } from "../../../entities/chart/model/const";
 import * as d3 from "d3";
@@ -61,7 +63,9 @@ export const useD3ZoomX = () => {
   };
 
   const zoomX = (factor: number) => {
-    setXDomain((d) => zoomDomain(d, factor, { minSpan: 0.5, maxSpan: 200 }));
+    setXDomain((d) =>
+      zoomDomain(d, factor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
+    );
   };
 
   const reset = () => {
