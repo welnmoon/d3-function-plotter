@@ -35,11 +35,22 @@ export const useD3ZoomXY = () => {
     unknown
   > | null>(null);
 
+  // --------------- ref -- domain ----------//
+  const xDomainRef = useRef<Domain>(xDOMAIN);
+  const yDomainRef = useRef<Domain>(yDOMAIN);
+
   const lastTransformRef = useRef(d3.zoomIdentity);
 
   // --------------- state ------------------
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
   const [yDomain, setYDomain] = useState<Domain>(yDOMAIN);
+
+  useEffect(() => {
+    xDomainRef.current = xDomain;
+  }, [xDomain]);
+  useEffect(() => {
+    yDomainRef.current = yDomain;
+  }, [yDomain]);
 
   //--------------------------------------//
   // --------- helpers ----------------- //
@@ -187,10 +198,13 @@ export const useD3ZoomXY = () => {
 
         lastTransformRef.current = current;
 
-        const xScale = d3.scaleLinear().domain(xDomain).range([0, INNER_WIDTH]);
+        const xScale = d3
+          .scaleLinear()
+          .domain(xDomainRef.current)
+          .range([0, INNER_WIDTH]);
         const yScale = d3
           .scaleLinear()
-          .domain(yDomain)
+          .domain(yDomainRef.current)
           .range([INNER_HEIGHT, 0]);
         console.log("x diff px: ", xDiffPx);
 
