@@ -61,6 +61,7 @@ export const useD3ZoomXY = () => {
     yDomainRef.current = yDomain;
   }, [yDomain]);
 
+  // zooming - sync - effect
   useEffect(() => {
     if (!isZooming) return;
 
@@ -229,7 +230,7 @@ export const useD3ZoomXY = () => {
 
     xAxisGroupRef.current
       .call(d3.axisBottom(xScale))
-      .attr("transform", `translate(0,${INNER_HEIGHT / 2})`);
+      .attr("transform", `translate(0,${yScale(0)})`);
     yAxisGroupRef.current.call(d3.axisLeft(yScale));
 
     plotGroupRef.current
