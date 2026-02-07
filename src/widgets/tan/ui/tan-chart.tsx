@@ -1,4 +1,13 @@
-import { Minus, MoveLeft, MoveRight, Plus, Undo2 } from "lucide-react";
+import {
+  ArrowUp,
+  Minus,
+  MoveDown,
+  MoveLeft,
+  MoveRight,
+  MoveUp,
+  Plus,
+  Undo2,
+} from "lucide-react";
 import {
   GRAPH_MAX_HEIGHT,
   GRAPH_MAX_WIDTH,
@@ -70,6 +79,12 @@ const TanChart = () => {
           </button>
           <button onClick={() => panBy("right")} title="Pan right">
             <MoveRight size={15} />
+          </button>
+          <button onClick={() => panBy("up")} title="Pan top">
+            <MoveUp size={15} />
+          </button>
+          <button onClick={() => panBy("down")} title="Pan bottom">
+            <MoveDown size={15} />
           </button>
 
           <button onClick={() => zoomBoth(1.2)} title="Zoom in (both axes)">

@@ -74,14 +74,23 @@ export const useD3ZoomXY = () => {
   // --------- helpers ----------------- //
   //------------------------------------//
 
-  const panBy = (dir: "left" | "right") => {
+  const panBy = (dir: "left" | "right" | "up" | "down") => {
     const svg = tanSvgRef.current;
     const zoom = zoomBehaviorRef.current;
     if (!svg || !zoom) return;
 
-    const stepPx = INNER_WIDTH * 0.1;
-    const dx = dir === "left" ? stepPx : -stepPx;
-    d3.select(svg).call(zoom.translateBy as any, dx, 0);
+    const stepX = INNER_WIDTH * 0.1;
+    const stepY = INNER_HEIGHT * 0.1;
+
+    let dx = 0;
+    let dy = 0;
+
+    if (dir === "left") dx = stepX;
+    if (dir === "right") dx = -stepX;
+    if (dir === "up") dy = stepY;
+    if (dir === "down") dy = -stepY;
+
+    d3.select(svg).call(zoom.translateBy as any, dx, dy);
   };
 
   const zoomBoth = (zoomFactor: number) => {
