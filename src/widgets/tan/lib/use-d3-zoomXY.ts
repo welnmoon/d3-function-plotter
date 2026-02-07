@@ -61,40 +61,17 @@ export const useD3ZoomXY = () => {
     yDomainRef.current = yDomain;
   }, [yDomain]);
 
+  useEffect(() => {
+    if (!isZooming) return;
+
+    // const { x, y } = lastDomainForUrlRef.current;
+    writeUrl(xDomain, yDomain);
+    setIsZooming(false);
+  }, [xDomain, yDomain, isZooming]);
+
   //--------------------------------------//
   // --------- helpers ----------------- //
   //------------------------------------//
-
-  // const zoomBy = (axis: "x" | "y" | "both", zoomFactor: number) => {
-  //   const svgNode = tanSvgRef.current;
-  //   const zoom = zoomBehaviorRef.current;
-  //   if (!svgNode || !zoom) return;
-
-  //   const svg = d3.select(svgNode);
-  //   const t = d3.zoomTransform(svgNode);
-  //   const nextK = t.k * zoomFactor;
-
-  //   if (axis === "both") {
-  //     svg.call(zoom.scaleBy as any, zoomFactor);
-  //     return;
-  //   }
-
-  //   if (axis === "x") {
-  //     const clampedK = Math.max(0.5, Math.min(10, nextK));
-  //     const nextY = t.y * (clampedK / t.k);
-  //     const nextT = d3.zoomIdentity.translate(t.x, nextY).scale(clampedK);
-  //     svg.call(zoom.transform as any, nextT);
-  //     return;
-  //   }
-
-  //   if (axis === "y") {
-  //     const clampedK = Math.max(0.5, Math.min(10, nextK));
-  //     const nextX = t.x * (clampedK / t.k);
-  //     const nextT = d3.zoomIdentity.translate(nextX, t.y).scale(clampedK);
-  //     svg.call(zoom.transform as any, nextT);
-  //     return;
-  //   }
-  // };
 
   const panBy = (dir: "left" | "right") => {
     const svg = tanSvgRef.current;
@@ -143,14 +120,6 @@ export const useD3ZoomXY = () => {
     d3.select(svg).call(zoom.transform as any, d3.zoomIdentity);
   };
 
-  useEffect(() => {
-    if (!isZooming) return;
-
-    const { x, y } = lastDomainForUrlRef.current;
-    writeUrl(x, y);
-    setIsZooming(false);
-  }, [xDomain, yDomain]);
-
   //--------------------------------------//
   // --------- init effect ------------- //
   //------------------------------------//
@@ -195,23 +164,6 @@ export const useD3ZoomXY = () => {
       .filter((event) => event.type !== "wheel")
       .scaleExtent([1, 1])
       .on("zoom", (event) => {
-        // const baseX = xDOMAIN;
-        // const baseY = yDOMAIN;
-        // const baseXScale = d3
-        //   .scaleLinear()
-        //   .domain(baseX)
-        //   .range([0, INNER_WIDTH]);
-        // const baseYScale = d3
-        //   .scaleLinear()
-        //   .domain(baseY)
-        //   .range([INNER_HEIGHT, 0]);
-
-        // const nextXDomain = event.transform
-        //   .rescaleX(baseXScale)
-        //   .domain() as Domain;
-        // const nextYDomain = event.transform
-        //   .rescaleY(baseYScale)
-        //   .domain() as Domain;
         const prev = lastTransformRef.current;
         const current = event.transform;
 
@@ -241,28 +193,6 @@ export const useD3ZoomXY = () => {
         const { x, y } = lastDomainForUrlRef.current;
         writeUrl(x, y);
       });
-
-    // xAxisGroup
-    //   .append("rect")
-    //   .attr("class", "x-wheel-zone")
-    //   .attr("x", 0)
-    //   .attr("y", -20)
-    //   .attr("width", INNER_WIDTH)
-    //   .attr("height", 40)
-    //   .attr("fill", "transparent")
-    //   .style("cursor", "ns-resize");
-
-    // xAxisGroup.select<SVGRectElement>(".x-wheel-zone").on("wheel", (event) => {
-    //   event.preventDefault();
-
-    //   const factor = event.deltaY < 0 ? 0.9 : 1.1;
-
-    //   setXDomain((prev) => {
-    //     const mid = (prev[0] + prev[1]) / 2;
-    //     const span = (prev[1] - prev[0]) * factor;
-    //     return [mid - span / 2, mid + span / 2];
-    //   });
-    // });
 
     svg.call(zoom);
     xAxisGroupRef.current = xAxisGroup;

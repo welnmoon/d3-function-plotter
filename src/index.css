@@ -119,6 +119,21 @@ button:active {
   stroke-width: 1.5;
 }
 
+.x-axis text,
+.y-axis text {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none;
+}
+
+.x-axis path,
+.x-axis line,
+.y-axis path,
+.y-axis line {
+  pointer-events: none;
+}
+
 .chartSvg .x-axis text,
 .chartSvg .y-axis text {
   fill: var(--axis-text);

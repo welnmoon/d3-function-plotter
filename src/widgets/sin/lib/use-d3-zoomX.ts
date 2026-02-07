@@ -10,11 +10,7 @@ import {
 } from "../../../entities/chart/model/const";
 import * as d3 from "d3";
 import { sinData } from "../../../entities/chart/model/data";
-import {
-  parseDomain,
-  serializeDomain,
-  writeUrl,
-} from "../../../shared/lib/domain-url";
+import { parseDomain, writeUrl } from "../../../shared/lib/domain-url";
 import { zoomDomain } from "../../../shared/lib/zoom-domain";
 
 export const useD3ZoomX = () => {
@@ -63,7 +59,9 @@ export const useD3ZoomX = () => {
     setIsZooming(false);
   }, [xDomain]);
 
-  // ------------- zoom / pan -----------------
+  //--------------------------------------//
+  // --------- helpers ----------------- //
+  //------------------------------------//
 
   const panBy = (dir: "left" | "right") => {
     const svg = sinSvgRef.current;
@@ -130,13 +128,6 @@ export const useD3ZoomX = () => {
       .zoom<SVGSVGElement, unknown>()
       .filter((event) => event?.type !== "wheel")
       .on("zoom", (event) => {
-        // const base = baseXDomainRef.current;
-        // const baseScale = d3.scaleLinear().domain(base).range([0, INNER_WIDTH]);
-        // const nextDomain = event.transform
-        //   .rescaleX(baseScale)
-        //   .domain() as Domain;
-
-        // setXDomain(nextDomain);
         const prev = lastTransformRef.current;
         const current = event.transform;
 
