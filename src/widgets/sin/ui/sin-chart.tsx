@@ -2,6 +2,7 @@ import { Minus, MoveLeft, MoveRight, Plus, Undo2 } from "lucide-react";
 import {
   GRAPH_MAX_HEIGHT,
   GRAPH_MAX_WIDTH,
+  ZOOM,
 } from "../../../entities/chart/model/const";
 import { useD3ZoomX } from "../lib/use-d3-zoomX";
 
@@ -16,7 +17,7 @@ const SinChart = () => {
             onWheel={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+              const factor = e.deltaY > 0 ? 1 / ZOOM : ZOOM;
               zoomX(factor);
             }}
             className="chartSvg"

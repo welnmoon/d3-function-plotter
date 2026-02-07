@@ -6,7 +6,7 @@ export const INNER_WIDTH = GRAPH_MAX_WIDTH - MARGIN.left - MARGIN.right;
 export const N = 1000;
 
 //ZOOM
-export const ZOOM = 1.2;
+export const ZOOM = 1.1;
 export const ZOOM_IN = 5;
 export const ZOOM_OUT = 200;
 export const MIN_SPAN = 5;

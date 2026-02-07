@@ -10,11 +10,7 @@ import {
   yDOMAIN,
 } from "../../../entities/chart/model/const";
 import { tanData } from "../../../entities/chart/model/data";
-import {
-  parseDomain,
-  serializeDomain,
-  writeUrl,
-} from "../../../shared/lib/domain-url";
+import { parseDomain, writeUrl } from "../../../shared/lib/domain-url";
 import { zoomDomain } from "../../../shared/lib/zoom-domain";
 
 export const useD3ZoomXY = () => {
@@ -56,7 +52,6 @@ export const useD3ZoomXY = () => {
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
   const [yDomain, setYDomain] = useState<Domain>(yDOMAIN);
 
-  const [isReady, setIsReady] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
 
   useEffect(() => {
@@ -172,7 +167,6 @@ export const useD3ZoomXY = () => {
     setXDomain(startX);
     setYDomain(startY);
     console.log("x in state: ", xDomain);
-    setIsReady(true);
     const node = tanSvgRef.current;
     if (!node) return;
     const svg = d3.select(node);

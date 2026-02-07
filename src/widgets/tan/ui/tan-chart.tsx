@@ -2,6 +2,7 @@ import { Minus, MoveLeft, MoveRight, Plus, Undo2 } from "lucide-react";
 import {
   GRAPH_MAX_HEIGHT,
   GRAPH_MAX_WIDTH,
+  ZOOM,
 } from "../../../entities/chart/model/const";
 import { useD3ZoomXY } from "../lib/use-d3-zoomXY";
 
@@ -16,7 +17,7 @@ const TanChart = () => {
             onWheel={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+              const factor = e.deltaY > 0 ? 1 / ZOOM : ZOOM;
               zoomBoth(factor);
             }}
             className="chartSvg"
@@ -38,7 +39,7 @@ const TanChart = () => {
             onWheel={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+              const factor = e.deltaY > 0 ? 1 / ZOOM : ZOOM;
               zoomX(factor);
             }}
           />
@@ -57,7 +58,7 @@ const TanChart = () => {
             onWheel={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+              const factor = e.deltaY > 0 ? 1 / ZOOM : ZOOM;
               zoomY(factor);
             }}
           />
