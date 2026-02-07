@@ -43,10 +43,13 @@ export const useD3ZoomXY = () => {
   const yDomainRef = useRef<Domain>(yDOMAIN);
 
   const lastTransformRef = useRef(d3.zoomIdentity);
+  const didInitFromUrlRef = useRef(false);
 
   // --------------- state ------------------
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
   const [yDomain, setYDomain] = useState<Domain>(yDOMAIN);
+
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     xDomainRef.current = xDomain;
@@ -146,9 +149,11 @@ export const useD3ZoomXY = () => {
 
     const startX = xFromUrl ?? xDOMAIN;
     const startY = yFromUrl ?? yDOMAIN;
-
+    console.log("x from url: ", xFromUrl);
     setXDomain(startX);
     setYDomain(startY);
+    console.log("x in state: ", xDomain);
+    setIsReady(true);
     const node = tanSvgRef.current;
     if (!node) return;
     const svg = d3.select(node);
@@ -254,6 +259,7 @@ export const useD3ZoomXY = () => {
   //------------------------------------//
 
   useEffect(() => {
+    if (!isReady) return;
     const params = new URLSearchParams(window.location.search);
 
     params.set("x", serializeDomain(xDomain));

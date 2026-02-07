@@ -20,7 +20,6 @@ const SinChart = () => {
               zoomX(factor);
             }}
             className="chartSvg"
-            title="Scroll to zoom X axis"
             ref={sinSvgRef}
             width={GRAPH_MAX_WIDTH}
             height={GRAPH_MAX_HEIGHT}
