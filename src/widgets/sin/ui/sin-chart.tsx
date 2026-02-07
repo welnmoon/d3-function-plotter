@@ -2,6 +2,7 @@ import { Minus, MoveLeft, MoveRight, Plus, Undo2 } from "lucide-react";
 import {
   GRAPH_MAX_HEIGHT,
   GRAPH_MAX_WIDTH,
+  ZOOM,
 } from "../../../entities/chart/model/const";
 import { useD3ZoomX } from "../lib/use-d3-zoomX";
 
@@ -16,7 +17,7 @@ const SinChart = () => {
             onWheel={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+              const factor = e.deltaY > 0 ? 1 / ZOOM : ZOOM;
               zoomX(factor);
             }}
             className="chartSvg"
@@ -27,20 +28,20 @@ const SinChart = () => {
         </div>
 
         <div className="chartButtons">
-          <button onClick={() => panBy("left")}>
+          <button onClick={() => panBy("left")} title="Pan left">
             <MoveLeft size={15} />
           </button>
-          <button onClick={() => panBy("right")}>
+          <button onClick={() => panBy("right")} title="Pan right">
             <MoveRight size={15} />
           </button>
 
-          <button onClick={() => zoomX(1.2)}>
+          <button onClick={() => zoomX(1.2)} title="Zoom in">
             <Plus size={15} />
           </button>
-          <button onClick={() => zoomX(1 / 1.2)}>
+          <button onClick={() => zoomX(1 / 1.2)} title="Zoom out">
             <Minus size={15} />
           </button>
-          <button onClick={() => reset()}>
+          <button onClick={() => reset()} title="Reset view">
             <Undo2 size={15} />
           </button>
         </div>

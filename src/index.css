@@ -1,36 +1,55 @@
 :root {
   color-scheme: light;
-  --bg: #e2d3be;
-  --text: #111111;
-  --card: #f3f4f6;
-  --border: #e5e7eb;
+
+  --bg: #fef9f3;
+  --text: #1a1a2e;
+  --card: #ffffff;
+  --border: #f0e6dc;
+
   --chart-bg: #ffffff;
-  --chart-line: #ef4444;
-  --axis: #94a3b8;
-  --axis-text: #334155;
-  --control-bg: #111827;
-  --control-text: #f9fafb;
+  --chart-line: #f400a1;
+  --axis: #cbd5e1;
+  --axis-text: #64748b;
+
+  --control-bg: #1a1a2e;
+  --control-text: #ffffff;
+
+  --accent: #ff6b9d;
+  --accent-light: #fff0f6;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0b0f19;
-  --text: #e5e7eb;
-  --card: #111827;
-  --border: #1f2937;
-  --chart-bg: #0f172a;
-  --chart-line: #f97316;
+
+  --bg: #0a0a14;
+  --text: #f5ebe0;
+  --card: #1a1a2e;
+  --border: #2a2a3e;
+
+  --chart-bg: #14142a;
+  --chart-line: #ff6b9d;
   --axis: #475569;
-  --axis-text: #cbd5e1;
-  --control-bg: #f8fafc;
-  --control-text: #0b0f19;
+  --axis-text: #94a3b8;
+
+  --control-bg: #f5ebe0;
+  --control-text: #0a0a14;
+
+  --accent: #f400a1;
+  --accent-light: #2a1a28;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: var(--bg);
   color: var(--text);
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 
 .container {
@@ -42,30 +61,54 @@ body {
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 button {
   background: var(--card);
   color: var(--text);
   border: 1px solid var(--border);
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
+
+button:hover {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
 .chartPage {
   min-height: 50vh;
   display: flex;
   justify-content: center;
   align-items: center;
-
   background: var(--bg);
+  padding: 40px 20px;
+  gap: 20px;
 }
 
 .chartSvg {
   display: block;
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--chart-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  max-width: 100%;
+  height: 400px;
 }
 
 .chartSvg .x-axis path,
@@ -73,62 +116,199 @@ button {
 .chartSvg .x-axis line,
 .chartSvg .y-axis line {
   stroke: var(--axis);
+  stroke-width: 1.5;
+}
+
+.x-axis text,
+.y-axis text {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none;
+}
+
+.x-axis path,
+.x-axis line,
+.y-axis path,
+.y-axis line {
+  pointer-events: none;
 }
 
 .chartSvg .x-axis text,
 .chartSvg .y-axis text {
   fill: var(--axis-text);
   font-size: 12px;
+  font-weight: 500;
 }
 
 .chartSvg .plot-line {
   stroke: var(--chart-line);
-  stroke-width: 2;
+  stroke-width: 3;
+  filter: drop-shadow(0 2px 4px rgba(244, 0, 161, 0.2));
 }
+
 .chartButtons {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-left: 16px;
+  gap: 12px;
+  margin-left: 20px;
+  flex: 0 0 auto;
 }
 
 .chartButtons button {
-  width: 40px;
-  height: 40px;
-
-  border-radius: 10px;
-  border: none;
-
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
   background: var(--card);
   color: var(--text);
-
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 600;
   cursor: pointer;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  padding: 0;
 }
 
 .chartButtons button:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  background: var(--accent-light);
+  border-color: var(--accent);
+  transform: translateY(-2px);
 }
 
 .chartButtons button:active {
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
 }
 
 .nav {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
-  gap: 20px;
+  margin-top: 20px;
+  gap: 24px;
+  padding: 16px;
+  flex-wrap: wrap;
 }
+
+.nav a {
+  padding: 10px 20px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.nav a:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
 a {
   text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
 }
 
 .themeButtons {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  padding: 8px;
+  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.themeButtons button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding: 16px;
+  }
+
+  .chartPage {
+    padding: 24px 14px;
+    gap: 14px;
+  }
+
+  .chartButtons {
+    margin-left: 12px;
+    gap: 10px;
+  }
+
+  .chartButtons button {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .nav {
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .nav a {
+    padding: 8px 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .chartPage {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chartButtons {
+    flex-direction: row;
+    margin-left: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .chartButtons button {
+    width: 46px;
+    height: 46px;
+  }
+
+  .chartSvg {
+    width: 100%;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  button {
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .container {
+    padding: 12px;
+  }
+
+  .chartPage {
+    padding: 18px 10px;
+  }
+
+  .chartButtons {
+    gap: 8px;
+  }
+
+  .chartButtons button {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+    border-radius: 11px;
+  }
+
+  .nav a {
+    padding: 8px 12px;
+  }
 }

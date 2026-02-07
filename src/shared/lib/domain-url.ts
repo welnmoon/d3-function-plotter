@@ -12,3 +12,11 @@ export const parseDomain = (value: string | null): Domain | null => {
 
 export const serializeDomain = (domain: Domain) =>
   domain.map((n) => Number(n.toFixed(3))).join(",");
+
+export const writeUrl = (x: Domain, y: Domain) => {
+  const params = new URLSearchParams(window.location.search);
+  params.set("x", serializeDomain(x));
+  params.set("y", serializeDomain(y));
+  const nextUrl = `${window.location.pathname}?${params.toString()}`;
+  window.history.replaceState(null, "", nextUrl);
+};

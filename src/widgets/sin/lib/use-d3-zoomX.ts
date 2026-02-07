@@ -6,10 +6,11 @@ import {
   MAX_SPAN,
   MIN_SPAN,
   xDOMAIN,
+  yDOMAIN,
 } from "../../../entities/chart/model/const";
 import * as d3 from "d3";
 import { sinData } from "../../../entities/chart/model/data";
-import { parseDomain, serializeDomain } from "../../../shared/lib/domain-url";
+import { parseDomain, writeUrl } from "../../../shared/lib/domain-url";
 import { zoomDomain } from "../../../shared/lib/zoom-domain";
 
 export const useD3ZoomX = () => {
@@ -41,16 +42,26 @@ export const useD3ZoomX = () => {
   const xDomainRef = useRef<Domain>(xDOMAIN);
 
   const lastTransformRef = useRef(d3.zoomIdentity);
+  const lastDomainForUrlRef = useRef<Domain>(xDOMAIN);
 
   // --------------- state ------------------
 
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
+  const [isZooming, setIsZooming] = useState(false);
 
   useEffect(() => {
     xDomainRef.current = xDomain;
   }, [xDomain]);
 
-  // ------------- zoom / pan -----------------
+  useEffect(() => {
+    if (!isZooming) return;
+    writeUrl(lastDomainForUrlRef.current, yDOMAIN);
+    setIsZooming(false);
+  }, [xDomain]);
+
+  //--------------------------------------//
+  // --------- helpers ----------------- //
+  //------------------------------------//
 
   const panBy = (dir: "left" | "right") => {
     const svg = sinSvgRef.current;
@@ -66,6 +77,7 @@ export const useD3ZoomX = () => {
     setXDomain((d) =>
       zoomDomain(d, factor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
     );
+    setIsZooming(true);
   };
 
   const reset = () => {
@@ -116,13 +128,6 @@ export const useD3ZoomX = () => {
       .zoom<SVGSVGElement, unknown>()
       .filter((event) => event?.type !== "wheel")
       .on("zoom", (event) => {
-        // const base = baseXDomainRef.current;
-        // const baseScale = d3.scaleLinear().domain(base).range([0, INNER_WIDTH]);
-        // const nextDomain = event.transform
-        //   .rescaleX(baseScale)
-        //   .domain() as Domain;
-
-        // setXDomain(nextDomain);
         const prev = lastTransformRef.current;
         const current = event.transform;
 
@@ -141,6 +146,9 @@ export const useD3ZoomX = () => {
         console.log("delta x: ", dX);
 
         setXDomain(([a, b]) => [a + dX, b + dX]);
+      })
+      .on("end", () => {
+        writeUrl(lastDomainForUrlRef.current, yDOMAIN);
       });
 
     svg.call(zoom);
@@ -154,12 +162,6 @@ export const useD3ZoomX = () => {
   // --------- update effect ----------- //
   //------------------------------------//
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    params.set("x", serializeDomain(xDomain));
-
-    const nextUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState(null, "", nextUrl);
     if (
       !xAxisGroupRef.current ||
       !yAxisGroupRef.current ||
@@ -186,6 +188,8 @@ export const useD3ZoomX = () => {
       .attr("class", "plot-line sin")
       .attr("fill", "none")
       .attr("d", line);
+
+    lastDomainForUrlRef.current = xDomain;
   }, [xDomain]);
 
   return { panBy, zoomX, sinSvgRef, reset };
