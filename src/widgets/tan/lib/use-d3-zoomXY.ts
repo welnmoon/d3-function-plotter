@@ -10,7 +10,11 @@ import {
   yDOMAIN,
 } from "../../../entities/chart/model/const";
 import { tanData } from "../../../entities/chart/model/data";
-import { parseDomain, serializeDomain } from "../../../shared/lib/domain-url";
+import {
+  parseDomain,
+  serializeDomain,
+  writeUrl,
+} from "../../../shared/lib/domain-url";
 import { zoomDomain } from "../../../shared/lib/zoom-domain";
 
 export const useD3ZoomXY = () => {
@@ -43,13 +47,17 @@ export const useD3ZoomXY = () => {
   const yDomainRef = useRef<Domain>(yDOMAIN);
 
   const lastTransformRef = useRef(d3.zoomIdentity);
-  const didInitFromUrlRef = useRef(false);
+  const lastDomainForUrlRef = useRef<{ x: Domain; y: Domain }>({
+    x: xDOMAIN,
+    y: yDOMAIN,
+  });
 
   // --------------- state ------------------
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
   const [yDomain, setYDomain] = useState<Domain>(yDOMAIN);
 
   const [isReady, setIsReady] = useState(false);
+  const [isZooming, setIsZooming] = useState(false);
 
   useEffect(() => {
     xDomainRef.current = xDomain;
@@ -104,6 +112,7 @@ export const useD3ZoomXY = () => {
   };
 
   const zoomBoth = (zoomFactor: number) => {
+    setIsZooming(true);
     setXDomain((d) =>
       zoomDomain(d, zoomFactor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
     );
@@ -113,12 +122,14 @@ export const useD3ZoomXY = () => {
   };
 
   const zoomX = (factor: number) => {
+    setIsZooming(true);
     setXDomain((d) =>
       zoomDomain(d, factor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
     );
   };
 
   const zoomY = (factor: number) => {
+    setIsZooming(true);
     setYDomain((d) =>
       zoomDomain(d, factor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
     );
@@ -136,6 +147,14 @@ export const useD3ZoomXY = () => {
 
     d3.select(svg).call(zoom.transform as any, d3.zoomIdentity);
   };
+
+  useEffect(() => {
+    if (!isZooming) return;
+
+    const { x, y } = lastDomainForUrlRef.current;
+    writeUrl(x, y);
+    setIsZooming(false);
+  }, [xDomain, yDomain]);
 
   //--------------------------------------//
   // --------- init effect ------------- //
@@ -223,6 +242,10 @@ export const useD3ZoomXY = () => {
 
         setXDomain(([a, b]) => [a + dX, b + dX]);
         setYDomain(([a, b]) => [a + dY, b + dY]);
+      })
+      .on("end", () => {
+        const { x, y } = lastDomainForUrlRef.current;
+        writeUrl(x, y);
       });
 
     // xAxisGroup
@@ -259,14 +282,6 @@ export const useD3ZoomXY = () => {
   //------------------------------------//
 
   useEffect(() => {
-    if (!isReady) return;
-    const params = new URLSearchParams(window.location.search);
-
-    params.set("x", serializeDomain(xDomain));
-    params.set("y", serializeDomain(yDomain));
-
-    const nextUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState(null, "", nextUrl);
     if (
       !xAxisGroupRef.current ||
       !yAxisGroupRef.current ||
@@ -300,6 +315,11 @@ export const useD3ZoomXY = () => {
       .attr("class", "plot-line tan")
       .attr("fill", "none")
       .attr("d", line);
+
+    lastDomainForUrlRef.current = {
+      x: xDomain,
+      y: yDomain,
+    };
   }, [xDomain, yDomain]);
 
   return { panBy, tanSvgRef, reset, zoomBoth, zoomX, zoomY };
