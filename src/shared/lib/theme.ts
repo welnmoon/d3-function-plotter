@@ -4,7 +4,7 @@ const STORAGE_KEY = "theme";
 const MEDIA_QUERY = "(prefers-color-scheme: dark)";
 
 const setDomTheme = (theme: "light" | "dark") => {
-  document.documentElement.dataset.theme = theme;
+  document.documentElement.dataset.theme = theme; // и потом как мы это читаем, в css?
 };
 
 export const getSystemTheme = () =>

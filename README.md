@@ -1,6 +1,6 @@
 # d3-function-plotter
 
-Тестовое задание: React + TypeScript + D3.  
+Тестовое задание: React + Vite + TypeScript + D3.  
 Два графика: sin(x) и tan(x). Есть оси, пан и зум, и сохранение текущего положения в URL, light/dark/system themes.
 
 ## Стек

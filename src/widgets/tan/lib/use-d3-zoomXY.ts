@@ -209,6 +209,10 @@ export const useD3ZoomXY = () => {
     yAxisGroupRef.current = yAxisGroup;
     plotGroupRef.current = plotGroup;
     zoomBehaviorRef.current = zoom;
+
+    return () => {
+      svg.on(".zoom", null);
+    };
   }, []);
 
   //--------------------------------------//
