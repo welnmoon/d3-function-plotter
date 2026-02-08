@@ -3,8 +3,8 @@ import type { Domain, Point } from "../../../entities/chart/model/types";
 import {
   INNER_HEIGHT,
   INNER_WIDTH,
-  MAX_SPAN,
-  MIN_SPAN,
+  MAX_SPAN_SIN,
+  MIN_SPAN_SIN,
   xDOMAIN,
   yDOMAIN,
 } from "../../../entities/chart/model/const";
@@ -47,6 +47,7 @@ export const useD3ZoomX = () => {
   // --------------- state ------------------
 
   const [xDomain, setXDomain] = useState<Domain>(xDOMAIN);
+  const [yDomain, setYDomain] = useState<Domain>(yDOMAIN);
   const [isZooming, setIsZooming] = useState(false);
 
   useEffect(() => {
@@ -55,9 +56,9 @@ export const useD3ZoomX = () => {
 
   useEffect(() => {
     if (!isZooming) return;
-    writeUrl(lastDomainForUrlRef.current, yDOMAIN);
+    writeUrl(lastDomainForUrlRef.current, yDomain);
     setIsZooming(false);
-  }, [xDomain]);
+  }, [xDomain, yDomain]);
 
   //--------------------------------------//
   // --------- helpers ----------------- //
@@ -75,7 +76,14 @@ export const useD3ZoomX = () => {
 
   const zoomX = (factor: number) => {
     setXDomain((d) =>
-      zoomDomain(d, factor, { minSpan: MIN_SPAN, maxSpan: MAX_SPAN }),
+      zoomDomain(d, factor, { minSpan: MIN_SPAN_SIN, maxSpan: MAX_SPAN_SIN }),
+    );
+    setIsZooming(true);
+  };
+
+  const zoomY = (factor: number) => {
+    setYDomain((d) =>
+      zoomDomain(d, factor, { minSpan: MIN_SPAN_SIN, maxSpan: MAX_SPAN_SIN }),
     );
     setIsZooming(true);
   };
@@ -173,7 +181,7 @@ export const useD3ZoomX = () => {
     )
       return;
     const xScale = d3.scaleLinear().domain(xDomain).range([0, INNER_WIDTH]);
-    const yScale = d3.scaleLinear().domain([-1, 1]).range([INNER_HEIGHT, 0]);
+    const yScale = d3.scaleLinear().domain(yDomain).range([INNER_HEIGHT, 0]);
 
     const line = d3
       .line<Point>()
@@ -194,7 +202,7 @@ export const useD3ZoomX = () => {
       .attr("d", line);
 
     lastDomainForUrlRef.current = xDomain;
-  }, [xDomain]);
+  }, [xDomain, yDomain]);
 
-  return { panBy, zoomX, sinSvgRef, reset };
+  return { panBy, zoomX, sinSvgRef, reset, zoomY };
 };

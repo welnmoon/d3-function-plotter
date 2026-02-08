@@ -7,7 +7,7 @@ import {
 import { useD3ZoomX } from "../lib/use-d3-zoomX";
 
 const SinChart = () => {
-  const { panBy, reset, zoomX, sinSvgRef } = useD3ZoomX();
+  const { panBy, reset, zoomX, sinSvgRef, zoomY } = useD3ZoomX();
 
   return (
     <main>
@@ -24,6 +24,25 @@ const SinChart = () => {
             ref={sinSvgRef}
             width={GRAPH_MAX_WIDTH}
             height={GRAPH_MAX_HEIGHT}
+          />
+
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: 50,
+              height: "100%",
+              cursor: "ew-resize",
+              background: "transparent",
+            }}
+            title="Scroll to zoom Y axis"
+            onWheel={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const factor = e.deltaY > 0 ? 1 / ZOOM : ZOOM;
+              zoomY(factor);
+            }}
           />
         </div>
 
