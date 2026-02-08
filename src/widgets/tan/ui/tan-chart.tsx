@@ -1,5 +1,4 @@
 import {
-  ArrowUp,
   Minus,
   MoveDown,
   MoveLeft,
