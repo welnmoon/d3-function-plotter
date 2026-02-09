@@ -106,8 +106,12 @@ export const useD3ZoomX = () => {
     const params = new URLSearchParams(window.location.search);
 
     const xFromUrl = parseDomain(params.get("x"));
+    const yFromUrl = parseDomain(params.get("y"));
 
-    if (xFromUrl) setXDomain(xFromUrl);
+    const startX = xFromUrl ?? xDOMAIN;
+    const startY = yFromUrl ?? yDOMAIN;
+    setXDomain(startX);
+    setYDomain(startY);
     const node = sinSvgRef.current;
     if (!node) return;
     const svg = d3.select(node);
