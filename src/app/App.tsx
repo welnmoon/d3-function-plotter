@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 
 import SinPage from "../pages/sin/ui/sin";
 import TanPage from "../pages/tan/ui/tan";
-import { applyTheme, getSavedTheme, type Theme } from "../shared/lib/theme";
+import {
+  applyTheme,
+  getSavedTheme,
+  type Theme,
+} from "../shared/lib/theme/theme";
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 
 export function App() {

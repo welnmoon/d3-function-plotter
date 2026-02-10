@@ -4,10 +4,12 @@ import {
   GRAPH_MAX_WIDTH,
   ZOOM,
 } from "../../../entities/chart/model/const";
-import { useD3ZoomX } from "../lib/use-d3-zoomX";
+import { useD3ZoomXY } from "../../../shared/lib/domain/use-d3-zoomXY";
 
 const SinChart = () => {
-  const { panBy, reset, zoomX, sinSvgRef, zoomY } = useD3ZoomX();
+  const { panBy, reset, zoomX, SvgRef, zoomY } = useD3ZoomXY({
+    variant: "sin",
+  });
 
   return (
     <main>
@@ -21,7 +23,7 @@ const SinChart = () => {
               zoomX(factor);
             }}
             className="chartSvg"
-            ref={sinSvgRef}
+            ref={SvgRef}
             width={GRAPH_MAX_WIDTH}
             height={GRAPH_MAX_HEIGHT}
           />

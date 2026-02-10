@@ -12,10 +12,12 @@ import {
   GRAPH_MAX_WIDTH,
   ZOOM,
 } from "../../../entities/chart/model/const";
-import { useD3ZoomXY } from "../lib/use-d3-zoomXY";
+import { useD3ZoomXY } from "../../../shared/lib/domain/use-d3-zoomXY";
 
 const TanChart = () => {
-  const { panBy, tanSvgRef, reset, zoomBoth, zoomX, zoomY } = useD3ZoomXY();
+  const { panBy, SvgRef, reset, zoomBoth, zoomX, zoomY } = useD3ZoomXY({
+    variant: "tan",
+  });
 
   return (
     <main>
@@ -29,7 +31,7 @@ const TanChart = () => {
               zoomBoth(factor);
             }}
             className="chartSvg"
-            ref={tanSvgRef}
+            ref={SvgRef}
             width={GRAPH_MAX_WIDTH}
             height={GRAPH_MAX_HEIGHT}
           />
@@ -50,8 +52,8 @@ const TanChart = () => {
               const factor = e.deltaY > 0 ? 1 / ZOOM : ZOOM;
               zoomX(factor);
             }}
-          />
-
+          />{" "}
+          {/*TODO: Фиксирован*/}
           <div
             style={{
               position: "absolute",

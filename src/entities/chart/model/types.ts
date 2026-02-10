@@ -8,3 +8,5 @@ export type Action =
   | { type: "zoom"; dir: ZoomDir };
 
 export type Domain = [number, number];
+
+export type Variant = "sin" | "tan";
