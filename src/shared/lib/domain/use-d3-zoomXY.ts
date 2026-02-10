@@ -5,7 +5,7 @@ import { xDOMAIN, yDOMAIN, ZOOM } from "../../../entities/chart/model/const";
 import { useChartD3Init } from "./use-chart-d3-init";
 import { useChartD3Render } from "./use-chart-d3-render";
 import { writeUrl } from "../url/domain-url";
-import { useD3ZoomXYHelpers } from "./use-D3-Zoom-XY-helpers";
+import { useD3ZoomXYHelpers } from "./use-d3-zoom-xy-helpers";
 
 interface Params {
   variant: Variant;

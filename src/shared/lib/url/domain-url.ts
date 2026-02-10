@@ -1,4 +1,4 @@
-import type { Domain } from "../../entities/chart/model/types";
+import type { Domain } from "../../../entities/chart/model/types";
 
 export const parseDomain = (value: string | null): Domain | null => {
   if (!value) return null;
