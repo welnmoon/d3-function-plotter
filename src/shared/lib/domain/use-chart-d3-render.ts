@@ -55,15 +55,6 @@ export const useChartD3Render = ({
     const xScale = d3.scaleLinear().domain(xDomain).range([0, INNER_WIDTH]);
     const yScale = d3.scaleLinear().domain(yDomain).range([INNER_HEIGHT, 0]);
 
-    const line = d3
-      .line<Point>()
-      .defined((d) => {
-        if (!Number.isFinite(d.y)) return false;
-        return true;
-      })
-      .x((d) => xScale(d.x))
-      .y((d) => yScale(d.y));
-
     xAxisGroupRef.current
       .call(d3.axisBottom(xScale))
       .attr("transform", `translate(0,${yScale(0)})`);
@@ -71,6 +62,35 @@ export const useChartD3Render = ({
 
     const renderData =
       variant === "sin" ? sinData(xDomain) : tanData(xDomain, INNER_WIDTH, 2);
+    const yLimit =
+      Math.max(Math.abs(yDomain[0]), Math.abs(yDomain[1])) * 1.05;
+    const maxJump = yLimit * 2;
+    let prevY: number | null = null;
+
+    const line = d3
+      .line<Point>()
+      .defined((d) => {
+        if (!Number.isFinite(d.y)) {
+          prevY = null;
+          return false;
+        }
+        if (variant !== "tan") {
+          prevY = d.y;
+          return true;
+        }
+        if (Math.abs(d.y) > yLimit) {
+          prevY = null;
+          return false;
+        }
+        if (prevY !== null && Math.abs(d.y - prevY) > maxJump) {
+          prevY = null;
+          return false;
+        }
+        prevY = d.y;
+        return true;
+      })
+      .x((d) => xScale(d.x))
+      .y((d) => yScale(d.y));
 
     plotGroupRef.current
       .selectAll("path")
