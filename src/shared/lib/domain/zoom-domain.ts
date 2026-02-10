@@ -1,4 +1,5 @@
-import type { Domain } from "../../entities/chart/model/types";
+import type { Domain } from "../../../entities/chart/model/types";
+
 const clamp = (v: number, min: number, max: number) =>
   Math.max(min, Math.min(max, v));
 
