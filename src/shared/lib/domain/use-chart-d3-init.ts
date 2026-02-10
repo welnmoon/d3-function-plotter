@@ -72,8 +72,32 @@ export const useChartD3Init = ({
       .attr("transform", `translate(30, 20)`)
       .attr("class", "main-tan");
     const xAxisGroup = mainGroup.append("g").attr("class", "x-axis");
+    xAxisGroup
+      .append("rect")
+      .attr("class", "x-axis-wheel")
+      .attr("x", 0)
+      .attr("y", -10)
+      .attr("width", INNER_WIDTH)
+      .attr("height", 20)
+      .attr("fill", "transparent")
+      .style("cursor", "ns-resize")
+      .style("pointer-events", "all")
+      .append("title")
+      .text("Scroll to zoom X axis");
 
     const yAxisGroup = mainGroup.append("g").attr("class", "y-axis");
+    yAxisGroup
+      .append("rect")
+      .attr("class", "y-axis-wheel")
+      .attr("x", -20)
+      .attr("y", 0)
+      .attr("width", 20)
+      .attr("height", INNER_HEIGHT)
+      .attr("fill", "transparent")
+      .style("cursor", "ew-resize")
+      .style("pointer-events", "all")
+      .append("title")
+      .text("Scroll to zoom Y axis");
     const plotGroup = mainGroup.append("g").attr("class", "plot");
     plotGroup
       .append("rect")
@@ -84,6 +108,8 @@ export const useChartD3Init = ({
       .attr("height", INNER_HEIGHT)
       .attr("fill", "transparent")
       .style("cursor", "grab");
+    xAxisGroup.raise();
+    yAxisGroup.raise();
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
